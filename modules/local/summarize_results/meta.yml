@@ -1,0 +1,54 @@
+name: "summarize_results"
+description: Aggregate per-sample results into summary files
+keywords:
+  - dengue
+  - summary
+  - aggregate
+tools:
+  - summarize_results:
+      description: |
+        Aggregates serotype calls and variant counts from all samples
+        into summary tables for reporting and downstream analysis.
+      homepage: https://github.com/smagala/denver
+      licence: ["MIT"]
+
+input:
+  - serotype_calls:
+      type: file
+      description: Collection of per-sample serotype call TSVs
+      pattern: "*_serotype_call.tsv"
+  - variant_counts:
+      type: file
+      description: Collection of filtered variant TSVs
+      pattern: "*_variants_frequency.tsv"
+
+output:
+  - serotype_calls:
+      type: file
+      description: Samples meeting coverage threshold (>=50%)
+      pattern: "serotype_calls.tsv"
+  - top_calls:
+      type: file
+      description: Highest coverage call per sample
+      pattern: "top_calls.tsv"
+  - all_info:
+      type: file
+      description: Complete sample x serotype matrix
+      pattern: "all_info.tsv"
+  - low_coverage:
+      type: file
+      description: Samples below threshold with best guess
+      pattern: "low_coverage_calls.csv"
+  - variants_summary:
+      type: file
+      description: Variant count per sample
+      pattern: "variants_summary.tsv"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"

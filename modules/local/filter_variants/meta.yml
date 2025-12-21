@@ -1,0 +1,46 @@
+name: "filter_variants"
+description: Filter ivar variants to intrahost SNVs (iSNVs)
+keywords:
+  - dengue
+  - variants
+  - isnv
+  - filter
+tools:
+  - filter_variants:
+      description: |
+        Filters ivar variant calls to identify intrahost SNVs (iSNVs).
+        Keeps variants with allele frequency between 0.2 and 0.8,
+        indicating true intrahost variation.
+      homepage: https://github.com/smagala/denver
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1' ]`
+  - variants:
+      type: file
+      description: ivar variants TSV file
+      pattern: "*.variants.tsv"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1' ]`
+  - filtered_variants:
+      type: file
+      description: Filtered variants with renamed columns
+      pattern: "*_variants_frequency.tsv"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"
