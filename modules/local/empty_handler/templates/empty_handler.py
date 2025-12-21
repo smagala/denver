@@ -78,7 +78,7 @@ def create_variant_file(sample_id, depth, virus_type):
 
 if __name__ == "__main__":
     # Nextflow variable substitution
-    prefix = "$task.ext.prefix" if "$task.ext.prefix" != "null" else "$meta.id"
+    prefix = "${task.ext.prefix}" if "${task.ext.prefix}" != "null" else "${meta.id}"
     depth = "${depth}"
     virus_type = "${virus_type}"
 

@@ -125,7 +125,7 @@ def call_serotype(alignment_file, bed_file, sample_id, min_coverage):
 
 if __name__ == "__main__":
     # Nextflow variable substitution
-    prefix = "$task.ext.prefix" if "$task.ext.prefix" != "null" else "$meta.id"
+    prefix = "${task.ext.prefix}" if "${task.ext.prefix}" != "null" else "${meta.id}"
     alignment_file = "${alignment}"
     bed_file = "${bed_file}"
     # Convert from decimal (0.50) to percentage (50)

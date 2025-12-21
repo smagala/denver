@@ -76,7 +76,7 @@ def filter_variants(variants_file, sample_id, min_freq, max_freq):
 
 if __name__ == "__main__":
     # Nextflow variable substitution
-    prefix = "$task.ext.prefix" if "$task.ext.prefix" != "null" else "$meta.id"
+    prefix = "${task.ext.prefix}" if "${task.ext.prefix}" != "null" else "${meta.id}"
     variants_file = "${variants}"
     min_freq = float("${isnv_min_freq}")
     max_freq = float("${isnv_max_freq}")
