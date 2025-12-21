@@ -82,6 +82,83 @@
                 }
             }
         },
+        "denv_analysis_options": {
+            "title": "DENV analysis options",
+            "type": "object",
+            "fa_icon": "fas fa-virus",
+            "description": "Parameters specific to Dengue virus analysis.",
+            "properties": {
+                "references_base": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Base path to DENV reference files directory.",
+                    "help_text": "Directory containing DENV reference FASTA files, BED files for primer trimming, and refs.txt listing available serotypes.",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "serotypes_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to file listing available serotypes (one per line).",
+                    "help_text": "Text file with serotype names (e.g., DENV1, DENV2, DENV3, DENV4, DENV2_sylvatic, DENV4_sylvatic).",
+                    "fa_icon": "fas fa-list"
+                },
+                "min_depth": {
+                    "type": "integer",
+                    "default": 10,
+                    "description": "Minimum read depth for consensus base calling.",
+                    "help_text": "Positions with depth below this threshold will be called as N in the consensus sequence.",
+                    "fa_icon": "fas fa-layer-group"
+                },
+                "consensus_threshold": {
+                    "type": "number",
+                    "default": 0.75,
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Minimum frequency threshold for consensus base calling.",
+                    "help_text": "A base must have at least this frequency to be called in the consensus (0-1).",
+                    "fa_icon": "fas fa-percentage"
+                },
+                "variant_threshold": {
+                    "type": "number",
+                    "default": 0.03,
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Minimum frequency threshold for variant calling.",
+                    "help_text": "Variants below this frequency will be filtered out (0-1).",
+                    "fa_icon": "fas fa-dna"
+                },
+                "coverage_threshold": {
+                    "type": "number",
+                    "default": 0.5,
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Minimum genome coverage for serotype assignment.",
+                    "help_text": "Samples must have at least this fraction of genome covered to be assigned a serotype (0-1).",
+                    "fa_icon": "fas fa-chart-area"
+                },
+                "read_cap": {
+                    "type": "integer",
+                    "default": 10000,
+                    "description": "Maximum read depth for mpileup.",
+                    "help_text": "Cap the depth to this value to speed up processing of high-coverage samples.",
+                    "fa_icon": "fas fa-sort-amount-up"
+                },
+                "skip_qc": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Skip QC visualization steps.",
+                    "help_text": "Set to true to skip variant plots and coverage summaries.",
+                    "fa_icon": "fas fa-forward"
+                },
+                "ct_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Optional file with Ct values for samples.",
+                    "help_text": "CSV file mapping sample IDs to Ct values for correlation analysis.",
+                    "fa_icon": "fas fa-file-csv"
+                }
+            }
+        },
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",
@@ -246,6 +323,9 @@
         },
         {
             "$ref": "#/$defs/reference_genome_options"
+        },
+        {
+            "$ref": "#/$defs/denv_analysis_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"

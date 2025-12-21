@@ -64,6 +64,7 @@ parent_directory/
 ```
 
 To use a custom references location:
+
 ```bash
 nextflow run smagala/denver --references_base /path/to/references
 ```
