@@ -1,0 +1,57 @@
+name: "serotype_caller"
+description: Calculate coverage and determine DENV serotype from alignment
+keywords:
+  - dengue
+  - serotype
+  - coverage
+  - alignment
+tools:
+  - serotype_caller:
+      description: |
+        Custom Python script for DENV serotype calling based on alignment coverage.
+        Determines serotype when coverage exceeds threshold (default 50%).
+      homepage: https://github.com/smagala/denver
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1' ]`
+  - alignment:
+      type: file
+      description: |
+        Alignment file from nextalign or mafft (FASTA format).
+        Filename should follow pattern: sample.serotype.depth.out.aln
+      pattern: "*.aln"
+  - bed_file:
+      type: file
+      description: |
+        Optional BED file defining trim regions.
+        If provided, coverage will be calculated for both trimmed and untrimmed.
+      pattern: "*.bed"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1' ]`
+  - serotype_call:
+      type: file
+      description: TSV file with coverage statistics and serotype call
+      pattern: "*_serotype_call.tsv"
+  - trimmed_alignment:
+      type: file
+      description: Trimmed alignment file (only if BED file provided)
+      pattern: "*.trim.aln"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"

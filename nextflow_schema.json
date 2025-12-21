@@ -136,6 +136,24 @@
                     "help_text": "Samples must have at least this fraction of genome covered to be assigned a serotype (0-1).",
                     "fa_icon": "fas fa-chart-area"
                 },
+                "isnv_min_freq": {
+                    "type": "number",
+                    "default": 0.2,
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Minimum allele frequency for iSNV detection.",
+                    "help_text": "Variants with frequency below this threshold are considered consensus-level, not intrahost.",
+                    "fa_icon": "fas fa-filter"
+                },
+                "isnv_max_freq": {
+                    "type": "number",
+                    "default": 0.8,
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Maximum allele frequency for iSNV detection.",
+                    "help_text": "Variants with frequency above this threshold are considered consensus-level, not intrahost.",
+                    "fa_icon": "fas fa-filter"
+                },
                 "read_cap": {
                     "type": "integer",
                     "default": 10000,

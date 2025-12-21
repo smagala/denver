@@ -1,0 +1,50 @@
+name: "empty_handler"
+description: Create placeholder files for samples with no mapped reads
+keywords:
+  - dengue
+  - placeholder
+  - empty
+tools:
+  - empty_handler:
+      description: |
+        Creates empty TSV files with correct headers for samples
+        that failed to map to any reference sequence.
+      homepage: https://github.com/smagala/denver
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1' ]`
+  - virus_type:
+      type: val
+      description: The virus type/serotype being processed
+  - depth:
+      type: val
+      description: Depth threshold used for consensus calling
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1' ]`
+  - virustype_info:
+      type: file
+      description: Empty virus type info file with headers
+      pattern: "*_all_virustype_info.txt"
+  - variants:
+      type: file
+      description: Empty variants file with headers
+      pattern: "*.variants.tsv"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"
