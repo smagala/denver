@@ -1,15 +1,22 @@
+# DISABLED: nf-tests require OAMD ECR containers which are not accessible from GitHub-hosted runners.
+# Re-enable when CDC-controlled self-hosted runners with ECR access are available.
+# See tech debt issue for tracking.
+#
+# Local testing works with: nf-test test tests/default.nf.test
 name: Run nf-test
 on:
-  pull_request:
-    paths-ignore:
-      - "docs/**"
-      - "**/meta.yml"
-      - "**/*.md"
-      - "**/*.png"
-      - "**/*.svg"
-  release:
-    types: [published]
+  # Manual trigger only until CDC runners available
   workflow_dispatch:
+  # Disabled triggers - uncomment when CDC runners available:
+  # pull_request:
+  #   paths-ignore:
+  #     - "docs/**"
+  #     - "**/meta.yml"
+  #     - "**/*.md"
+  #     - "**/*.png"
+  #     - "**/*.svg"
+  # release:
+  #   types: [published]
 
 # Cancel if a newer run is started
 concurrency:

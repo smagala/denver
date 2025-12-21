@@ -6,11 +6,11 @@ container images and docker settings for OAMD infrastructure.
 
 ## Files
 
-| File | Purpose |
-|------|---------|
+| File                    | Purpose                                           |
+| ----------------------- | ------------------------------------------------- |
 | `amd_containers.config` | Container image overrides using OAMD ECR registry |
-| `amd_docker.config` | Docker runtime settings for hardened containers |
-| `amd_local.config` | Combined config for local development/testing |
+| `amd_docker.config`     | Docker runtime settings for hardened containers   |
+| `amd_local.config`      | Combined config for local development/testing     |
 
 ## Container Architecture
 
@@ -45,16 +45,16 @@ nextflow run main.nf -profile aws -c configs/amd_aws.config
 
 Current container versions (as of 2024-12-20):
 
-| Module | Container | Version |
-|--------|-----------|---------|
-| FASTQC | oamd-bio-fastqc | 0.12.2_07fd4b9_v0 |
-| MULTIQC | oamd-bio-multiqc | 1.31_7eb4de1_v0 |
-| BWA | oamd-bio-bwa | 0.7.19_28aafd7_v6 |
-| SAMTOOLS | oamd-bio-samtools | 1.22.1_f7896d2_v6 |
-| IVAR | oamd-bio-ivar | 1.4.4_f85436c_v0 |
-| BEDTOOLS | oamd-bio-bedtools | 2.31.1_43a5f7b_v1 |
+| Module    | Container          | Version                     |
+| --------- | ------------------ | --------------------------- |
+| FASTQC    | oamd-bio-fastqc    | 0.12.2_07fd4b9_v0           |
+| MULTIQC   | oamd-bio-multiqc   | 1.31_7eb4de1_v0             |
+| BWA       | oamd-bio-bwa       | 0.7.19_28aafd7_v6           |
+| SAMTOOLS  | oamd-bio-samtools  | 1.22.1_f7896d2_v6           |
+| IVAR      | oamd-bio-ivar      | 1.4.4_f85436c_v0            |
+| BEDTOOLS  | oamd-bio-bedtools  | 2.31.1_43a5f7b_v1           |
 | NEXTCLADE | oamd-bio-nextclade | 3.18.1-cli_f556ccb_20251220 |
-| MAFFT | oamd-bio-mafft | 7.525_a2015e9_20251220 |
+| MAFFT     | oamd-bio-mafft     | 7.525_a2015e9_20251220      |
 
 ## Updating Containers
 
