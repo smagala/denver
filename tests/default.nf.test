@@ -13,9 +13,12 @@ nextflow_pipeline {
         }
 
         then {
-            // TODO: Re-enable snapshot testing once DENV workflow is fully implemented (Epic 5)
-            // For now, just verify the pipeline executes successfully
             assert workflow.success
+            assertAll(
+                { assert snapshot(
+                    path("${params.outdir}/pipeline_info/denver_software_mqc_versions.yml")
+                ).match("versions") }
+            )
         }
     }
 }
