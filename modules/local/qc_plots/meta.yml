@@ -1,0 +1,53 @@
+name: "qc_plots"
+description: Create QC scatter plots for DENV analysis
+keywords:
+  - dengue
+  - plots
+  - qc
+  - visualization
+tools:
+  - qc_plots:
+      description: |
+        Creates scatter plots for variant counts and Ct values vs coverage,
+        colored by serotype. Uses matplotlib with Agg backend.
+      homepage: https://github.com/smagala/denver
+      licence: ["MIT"]
+
+input:
+  - serotype_calls:
+      type: file
+      description: Serotype calls TSV with sample IDs and coverage
+      pattern: "serotype_calls.tsv"
+  - variants_summary:
+      type: file
+      description: Variants summary TSV with counts per sample
+      pattern: "variants_summary.tsv"
+  - ct_file:
+      type: file
+      description: Optional Ct values file (CSV format)
+      pattern: "*.csv"
+  - ct_column:
+      type: val
+      description: Column name containing Ct values
+  - id_column:
+      type: val
+      description: Column name containing sample IDs
+
+output:
+  - variant_plot:
+      type: file
+      description: Scatter plot of variant counts per sample
+      pattern: "variant_plot.pdf"
+  - ct_plot:
+      type: file
+      description: Scatter plot of Ct vs coverage (if Ct data provided)
+      pattern: "ct_plot.pdf"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"
