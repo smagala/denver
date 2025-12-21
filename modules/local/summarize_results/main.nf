@@ -2,8 +2,7 @@ process SUMMARIZE_RESULTS {
     tag "summary"
     label 'process_single'
 
-    // TODO: Update container when DENV Python container is available
-    container 'placeholder'
+    container '025066257930.dkr.ecr.us-east-1.amazonaws.com/oamd-bio-python:3.12-den_478b5ab_20251221'
 
     input:
     path(serotype_calls)
