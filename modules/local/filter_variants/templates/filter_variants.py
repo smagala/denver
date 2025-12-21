@@ -34,12 +34,7 @@ COLUMN_MAPPING = {
     "ALT_AA": "alternative_amino_acid",
 }
 
-# Frequency thresholds for iSNV detection
-MIN_FREQ = 0.2
-MAX_FREQ = 0.8
-
-
-def filter_variants(variants_file, sample_id):
+def filter_variants(variants_file, sample_id, min_freq, max_freq):
     """
     Filter variants to iSNVs (0.2 < freq < 0.8) and rename columns.
 
@@ -65,7 +60,7 @@ def filter_variants(variants_file, sample_id):
                 except ValueError:
                     continue
 
-                if not (MIN_FREQ < alt_freq < MAX_FREQ):
+                if not (min_freq < alt_freq < max_freq):
                     continue
 
                 # Map columns to new names
@@ -83,8 +78,10 @@ if __name__ == "__main__":
     # Nextflow variable substitution
     prefix = "$task.ext.prefix" if "$task.ext.prefix" != "null" else "$meta.id"
     variants_file = "${variants}"
+    min_freq = float("${isnv_min_freq}")
+    max_freq = float("${isnv_max_freq}")
 
-    count = filter_variants(variants_file, prefix)
+    count = filter_variants(variants_file, prefix, min_freq, max_freq)
 
     # Version reporting
     versions = {

@@ -14,9 +14,6 @@ from Bio import SeqIO
 import yaml
 
 
-# Coverage threshold for positive serotype call
-MIN_COVERAGE = 50
-
 # Ambiguous bases to exclude from coverage calculation
 AMBIGUOUS_BASES = {"n", "-", "N"}
 
@@ -60,9 +57,12 @@ def trim_alignment(sequence, bed_file, output_file):
     return calculate_coverage(trimmed_seq)[0]
 
 
-def call_serotype(alignment_file, bed_file, sample_id):
+def call_serotype(alignment_file, bed_file, sample_id, min_coverage):
     """
     Process alignment file and determine serotype call.
+
+    Args:
+        min_coverage: Minimum coverage percentage for positive call (0-100)
 
     Returns dict with coverage statistics and serotype call.
     """
@@ -106,7 +106,7 @@ def call_serotype(alignment_file, bed_file, sample_id):
             result["coverage_trimmed"] = "NA"
 
         # Determine serotype call based on coverage threshold
-        if perc_cov >= MIN_COVERAGE:
+        if perc_cov >= min_coverage:
             result["serotype_called"] = file_info["serotype"]
         else:
             result["serotype_called"] = "NA"
@@ -128,8 +128,10 @@ if __name__ == "__main__":
     prefix = "$task.ext.prefix" if "$task.ext.prefix" != "null" else "$meta.id"
     alignment_file = "${alignment}"
     bed_file = "${bed_file}"
+    # Convert from decimal (0.50) to percentage (50)
+    min_coverage = float("${coverage_threshold}") * 100
 
-    call_serotype(alignment_file, bed_file, prefix)
+    call_serotype(alignment_file, bed_file, prefix, min_coverage)
 
     # Version reporting
     import Bio

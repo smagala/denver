@@ -14,11 +14,7 @@ from collections import defaultdict
 import yaml
 
 
-# Coverage threshold for positive serotype call
-MIN_COVERAGE = 50
-
-
-def summarize_serotype_calls(serotype_files):
+def summarize_serotype_calls(serotype_files, min_coverage):
     """
     Aggregate serotype calls from all samples.
 
@@ -63,7 +59,7 @@ def summarize_serotype_calls(serotype_files):
                 possible_tops.append(row)
                 all_lines.append(row)
 
-                if coverage >= MIN_COVERAGE:
+                if coverage >= min_coverage:
                     serotype_calls.append(row)
                     serotypes[sample_id].append(row.get("serotype_called", "NA"))
 
@@ -188,13 +184,17 @@ def write_outputs(headers, all_lines, serotype_calls, top_calls, low_coverage, v
 
 
 if __name__ == "__main__":
+    # Nextflow variable substitution
+    # Convert from decimal (0.50) to percentage (50)
+    min_coverage = float("${coverage_threshold}") * 100
+
     # Find input files (Nextflow stages them in work directory)
     serotype_files = glob.glob("*_serotype_call.tsv") + glob.glob("*_all_virustype_info.txt")
     variant_files = glob.glob("*_variants_frequency.tsv")
 
     # Process serotype calls
     headers, all_lines, serotype_calls, top_calls, low_coverage = summarize_serotype_calls(
-        serotype_files
+        serotype_files, min_coverage
     )
 
     # Process variant counts

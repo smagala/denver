@@ -7,6 +7,7 @@ process SEROTYPE_CALLER {
     input:
     tuple val(meta), path(alignment)
     path(bed_file)
+    val(coverage_threshold)
 
     output:
     tuple val(meta), path("*_serotype_call.tsv"), emit: serotype_call

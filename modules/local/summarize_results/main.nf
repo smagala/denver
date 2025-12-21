@@ -7,6 +7,7 @@ process SUMMARIZE_RESULTS {
     input:
     path(serotype_calls)
     path(variant_counts)
+    val(coverage_threshold)
 
     output:
     path("serotype_calls.tsv")    , emit: serotype_calls

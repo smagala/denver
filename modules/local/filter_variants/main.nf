@@ -6,6 +6,8 @@ process FILTER_VARIANTS {
 
     input:
     tuple val(meta), path(variants)
+    val(isnv_min_freq)
+    val(isnv_max_freq)
 
     output:
     tuple val(meta), path("*_variants_frequency.tsv"), emit: filtered_variants
