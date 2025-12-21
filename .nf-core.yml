@@ -26,6 +26,9 @@ lint:
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+  # nf-test workflow disabled until CDC-controlled runners with ECR access available
+  # See tech debt issue #28
+  actions_nf_test: false
 
 template:
   org: smagala
