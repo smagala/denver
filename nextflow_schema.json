@@ -167,25 +167,6 @@
                     "description": "Skip QC visualization steps.",
                     "help_text": "Set to true to skip variant plots and coverage summaries.",
                     "fa_icon": "fas fa-forward"
-                },
-                "ct_file": {
-                    "type": "string",
-                    "format": "file-path",
-                    "description": "Optional file with Ct values for samples.",
-                    "help_text": "CSV file mapping sample IDs to Ct values for correlation analysis.",
-                    "fa_icon": "fas fa-file-csv"
-                },
-                "ct_column": {
-                    "type": "string",
-                    "description": "Name of column containing Ct values in ct_file.",
-                    "help_text": "Column header for Ct values. Defaults to 'Ct' if not specified.",
-                    "fa_icon": "fas fa-columns"
-                },
-                "id_column": {
-                    "type": "string",
-                    "description": "Name of column containing sample IDs in ct_file.",
-                    "help_text": "Column header for sample identifiers. Defaults to 'sample_id' if not specified.",
-                    "fa_icon": "fas fa-columns"
                 }
             }
         },

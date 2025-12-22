@@ -191,16 +191,23 @@ workflow DENVER {
     // MODULE: Generate QC plots (optional)
     //
     if (!params.skip_qc) {
-        def ct_file = params.ct_file ? file(params.ct_file) : file("NO_FILE")
-        def ct_column = params.ct_column ?: "Ct"
-        def id_column = params.id_column ?: "sample_id"
+        // Extract Ct data from samplesheet meta and create TSV
+        ch_samplesheet
+            .filter { meta, reads -> meta.ct != null }
+            .map { meta, reads -> "${meta.id}\t${meta.ct}" }
+            .collect()
+            .map { lines ->
+                def content = "sample_id\tct\n" + lines.join("\n")
+                content
+            }
+            .collectFile(name: 'ct_data.tsv', newLine: false, storeDir: "${params.outdir}/pipeline_info")
+            .ifEmpty { file("NO_FILE") }
+            .set { ch_ct_data }
 
         QC_PLOTS (
             SUMMARIZE_RESULTS.out.serotype_calls,
             SUMMARIZE_RESULTS.out.variants_summary,
-            ct_file,
-            ct_column,
-            id_column
+            ch_ct_data
         )
         ch_versions = ch_versions.mix(QC_PLOTS.out.versions)
     }

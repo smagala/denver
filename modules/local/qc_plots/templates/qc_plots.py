@@ -90,26 +90,26 @@ def create_variant_plot(variants_file, virus_dict, colour_dict, patch_list):
     plt.close()
 
 
-def create_ct_plot(ct_file, ct_column, id_column, serotype_file, virus_dict, colour_dict, patch_list):
+def create_ct_plot(ct_file, serotype_file, virus_dict, colour_dict, patch_list):
     """Create scatter plot of Ct values vs coverage."""
-    if not os.path.exists(ct_file) or ct_file == "NO_FILE":
+    # Check if ct_data file exists and has content
+    if not os.path.exists(ct_file) or os.path.getsize(ct_file) == 0:
         return False
 
-    # Load Ct values
+    # Load Ct values from the pre-formatted TSV
     ct_dict = {}
     with open(ct_file) as f:
-        reader = csv.DictReader(f)
+        reader = csv.DictReader(f, delimiter="\\t")
         for row in reader:
-            sample_id = row.get(id_column, "")
-            if sample_id not in virus_dict:
-                continue
-            try:
-                value = float(row.get(ct_column, 45))
-                if np.isnan(value):
-                    value = 45
-            except (ValueError, TypeError):
-                value = 45
-            ct_dict[sample_id] = value
+            sample_id = row.get("sample_id", "")
+            ct_value = row.get("ct", "")
+            if sample_id and ct_value and sample_id in virus_dict:
+                try:
+                    value = float(ct_value)
+                    if not np.isnan(value):
+                        ct_dict[sample_id] = value
+                except (ValueError, TypeError):
+                    pass
 
     if not ct_dict:
         return False
@@ -159,9 +159,7 @@ if __name__ == "__main__":
     # Nextflow variable substitution
     serotype_file = "${serotype_calls}"
     variants_file = "${variants_summary}"
-    ct_file = "${ct_file}"
-    ct_column = "${ct_column}"
-    id_column = "${id_column}"
+    ct_file = "${ct_data}"
 
     # Load serotype data and create color mapping
     virus_dict, colour_dict, patch_list = load_serotype_data(serotype_file)
@@ -171,9 +169,7 @@ if __name__ == "__main__":
         create_variant_plot(variants_file, virus_dict, colour_dict, patch_list)
 
         # Create Ct plot if data available
-        create_ct_plot(
-            ct_file, ct_column, id_column, serotype_file, virus_dict, colour_dict, patch_list
-        )
+        create_ct_plot(ct_file, serotype_file, virus_dict, colour_dict, patch_list)
 
     # Version reporting
     import matplotlib

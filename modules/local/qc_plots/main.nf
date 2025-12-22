@@ -7,9 +7,7 @@ process QC_PLOTS {
     input:
     path(serotype_calls)
     path(variants_summary)
-    path(ct_file)
-    val(ct_column)
-    val(id_column)
+    path(ct_data)  // TSV with sample_id and ct columns, or empty file
 
     output:
     path("variant_plot.pdf"), emit: variant_plot
