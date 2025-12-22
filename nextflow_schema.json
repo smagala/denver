@@ -167,13 +167,6 @@
                     "description": "Skip QC visualization steps.",
                     "help_text": "Set to true to skip variant plots and coverage summaries.",
                     "fa_icon": "fas fa-forward"
-                },
-                "ct_file": {
-                    "type": "string",
-                    "format": "file-path",
-                    "description": "Optional file with Ct values for samples.",
-                    "help_text": "CSV file mapping sample IDs to Ct values for correlation analysis.",
-                    "fa_icon": "fas fa-file-csv"
                 }
             }
         },

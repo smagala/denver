@@ -1,0 +1,49 @@
+name: "nextclade_align"
+description: Perform pairwise alignment of consensus sequence against reference using Nextclade
+keywords:
+  - alignment
+  - consensus
+  - nextclade
+  - pairwise
+tools:
+  - "nextclade":
+      description: "Viral genome sequence alignment and analysis"
+      homepage: "https://github.com/nextstrain/nextclade"
+      documentation: "https://docs.nextstrain.org/projects/nextclade/en/stable/"
+      licence: ["MIT"]
+      identifier: "biotools:nextclade"
+
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. `[ id:'sample1', serotype:'DENV1' ]`
+    - consensus:
+        type: file
+        description: Consensus FASTA file to align
+        pattern: "*.{fa,fasta}"
+  - - reference:
+        type: file
+        description: Reference FASTA file
+        pattern: "*.{fa,fasta}"
+
+output:
+  - alignment:
+      - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.aln.fasta":
+          type: file
+          description: Aligned FASTA file
+          pattern: "*.aln.fasta"
+  - versions:
+      - "versions.yml":
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"
