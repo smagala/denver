@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTQC                      } from '../modules/nf-core/fastqc/main'
+include { FALCO                       } from '../modules/local/falco/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { BWA_INDEX                   } from '../modules/nf-core/bwa/index/main'
 include { SUMMARIZE_RESULTS           } from '../modules/local/summarize_results/main'
@@ -32,12 +32,12 @@ workflow DENVER {
     ch_multiqc_files = Channel.empty()
 
     //
-    // MODULE: Run FastQC
+    // MODULE: Run Falco (FastQC-compatible read QC)
     //
-    FASTQC (
+    FALCO (
         ch_samplesheet
     )
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
+    ch_multiqc_files = ch_multiqc_files.mix(FALCO.out.txt.collect{it[1]})
 
     //
     // Load serotype references from refs.txt
