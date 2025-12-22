@@ -26,6 +26,13 @@
                 "exists": true,
                 "pattern": "^([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
                 "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "ct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 50,
+                "errorMessage": "Ct value must be a number between 0 and 50",
+                "meta": ["ct"]
             }
         },
         "required": ["sample", "fastq_1"]
