@@ -3,12 +3,17 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { FASTQC                 } from '../modules/nf-core/fastqc/main'
-include { MULTIQC                } from '../modules/nf-core/multiqc/main'
-include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_denver_pipeline'
+
+include { FASTQC                      } from '../modules/nf-core/fastqc/main'
+include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
+include { BWA_INDEX                   } from '../modules/nf-core/bwa/index/main'
+include { SUMMARIZE_RESULTS           } from '../modules/local/summarize_results/main'
+include { QC_PLOTS                    } from '../modules/local/qc_plots/main'
+include { DENV_SEROTYPE_ANALYSIS      } from '../subworkflows/local/denv_serotype_analysis/main'
+include { paramsSummaryMap            } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc        } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML      } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText      } from '../subworkflows/local/utils_nfcore_denver_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,10 +25,12 @@ workflow DENVER {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+
     main:
 
-    ch_versions = channel.empty()
-    ch_multiqc_files = channel.empty()
+    ch_versions = Channel.empty()
+    ch_multiqc_files = Channel.empty()
+
     //
     // MODULE: Run FastQC
     //
@@ -31,7 +38,172 @@ workflow DENVER {
         ch_samplesheet
     )
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
-    // Note: FASTQC versions now emitted via topic:versions (captured by Channel.topic below)
+
+    //
+    // Load serotype references from refs.txt
+    //
+    Channel
+        .fromPath(params.serotypes_file)
+        .splitText()
+        .map { it.trim() }
+        .filter { it }  // Remove empty lines
+        .set { ch_serotypes }
+
+    //
+    // Create channels for each serotype's reference files
+    //
+    ch_serotypes
+        .map { serotype ->
+            def fasta = file("${params.references_base}/${serotype}.fasta", checkIfExists: true)
+            def bed = file("${params.references_base}/${serotype}.bed", checkIfExists: true)
+            def trim_bed = file("${params.references_base}/${serotype}.trim.bed")
+            def trim_bed_path = trim_bed.exists() ? trim_bed : file("NO_FILE")
+            [
+                [ id: serotype ],  // meta for reference
+                fasta,
+                bed,
+                trim_bed_path
+            ]
+        }
+        .set { ch_references }
+
+    //
+    // MODULE: Create BWA index for each serotype reference
+    //
+    ch_references
+        .map { meta, fasta, bed, trim_bed -> [ meta, fasta ] }
+        .set { ch_fasta_for_index }
+
+    BWA_INDEX (
+        ch_fasta_for_index
+    )
+    ch_versions = ch_versions.mix(BWA_INDEX.out.versions.first())
+
+    //
+    // Prepare reference channels with index
+    //
+    BWA_INDEX.out.index
+        .join(ch_references.map { meta, fasta, bed, trim_bed -> [ meta, fasta, bed, trim_bed ] })
+        .map { meta, index, fasta, bed, trim_bed ->
+            [ meta, index, fasta, bed, trim_bed ]
+        }
+        .set { ch_indexed_references }
+
+    //
+    // Cross samples with serotypes to create all combinations
+    //
+    ch_samplesheet
+        .combine(ch_indexed_references)
+        .map { sample_meta, reads, ref_meta, index, fasta, bed, trim_bed ->
+            def new_meta = sample_meta + [ serotype: ref_meta.id ]
+            [
+                new_meta,    // sample meta with serotype
+                reads,       // sample reads
+                ref_meta,    // reference meta
+                index,       // bwa index
+                fasta,       // reference fasta
+                bed,         // primer bed
+                trim_bed     // trim bed (optional)
+            ]
+        }
+        .set { ch_sample_serotype_combinations }
+
+    //
+    // Prepare channels for subworkflow inputs
+    //
+    ch_sample_serotype_combinations
+        .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
+            [ meta, reads ]
+        }
+        .set { ch_reads }
+
+    ch_sample_serotype_combinations
+        .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
+            [ ref_meta, index ]
+        }
+        .unique()
+        .set { ch_bwa_index }
+
+    ch_sample_serotype_combinations
+        .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
+            [ ref_meta, fasta ]
+        }
+        .unique()
+        .set { ch_reference_fasta }
+
+    ch_sample_serotype_combinations
+        .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
+            bed
+        }
+        .first()
+        .set { ch_primer_bed }
+
+    ch_sample_serotype_combinations
+        .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
+            trim_bed
+        }
+        .first()
+        .set { ch_trim_bed }
+
+    //
+    // SUBWORKFLOW: Run DENV serotype analysis for each sample×serotype
+    //
+    DENV_SEROTYPE_ANALYSIS (
+        ch_reads,
+        ch_bwa_index,
+        ch_reference_fasta,
+        ch_primer_bed,
+        ch_trim_bed,
+        params.min_depth,
+        params.consensus_threshold,
+        params.variant_threshold,
+        params.coverage_threshold,
+        params.isnv_min_freq,
+        params.isnv_max_freq,
+        params.read_cap
+    )
+    ch_versions = ch_versions.mix(DENV_SEROTYPE_ANALYSIS.out.versions)
+
+    //
+    // Collect all serotype calls for summarization
+    //
+    DENV_SEROTYPE_ANALYSIS.out.serotype_call
+        .map { meta, tsv -> tsv }
+        .collect()
+        .set { ch_all_serotype_calls }
+
+    DENV_SEROTYPE_ANALYSIS.out.variants
+        .map { meta, tsv -> tsv }
+        .collect()
+        .set { ch_all_variants }
+
+    //
+    // MODULE: Summarize results across all samples
+    //
+    SUMMARIZE_RESULTS (
+        ch_all_serotype_calls,
+        ch_all_variants,
+        params.coverage_threshold
+    )
+    ch_versions = ch_versions.mix(SUMMARIZE_RESULTS.out.versions)
+
+    //
+    // MODULE: Generate QC plots (optional)
+    //
+    if (!params.skip_qc) {
+        def ct_file = params.ct_file ? file(params.ct_file) : file("NO_FILE")
+        def ct_column = params.ct_column ?: "Ct"
+        def id_column = params.id_column ?: "sample_id"
+
+        QC_PLOTS (
+            SUMMARIZE_RESULTS.out.serotype_calls,
+            SUMMARIZE_RESULTS.out.variants_summary,
+            ct_file,
+            ct_column,
+            id_column
+        )
+        ch_versions = ch_versions.mix(QC_PLOTS.out.versions)
+    }
 
     //
     // Collate and save software versions
@@ -61,7 +233,6 @@ workflow DENVER {
             sort: true,
             newLine: true
         ).set { ch_collated_versions }
-
 
     //
     // MODULE: MultiQC
@@ -103,9 +274,9 @@ workflow DENVER {
         []
     )
 
-    emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
-
+    emit:
+    multiqc_report = MULTIQC.out.report.toList()
+    versions       = ch_versions
 }
 
 /*
