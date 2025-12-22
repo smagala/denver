@@ -1,0 +1,36 @@
+nextflow_process {
+
+    name "Test Process NEXTCLADE_ALIGN"
+    script "../main.nf"
+    process "NEXTCLADE_ALIGN"
+
+    tag "modules"
+    tag "modules_local"
+    tag "nextclade"
+    tag "nextclade_align"
+
+    test("stub test") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test', serotype: 'DENV1' ],
+                    file("${projectDir}/tests/data/denv1_R1.fastq.gz")  // placeholder for consensus
+                ]
+                input[1] = file("${projectDir}/../assets/denver/1.0.0/DENV1.fasta")
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.alignment },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

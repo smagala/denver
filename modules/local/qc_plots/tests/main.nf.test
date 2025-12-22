@@ -1,0 +1,33 @@
+nextflow_process {
+
+    name "Test Process QC_PLOTS"
+    script "../main.nf"
+    process "QC_PLOTS"
+
+    tag "modules"
+    tag "modules_local"
+    tag "qc_plots"
+
+    test("stub test") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = file("${projectDir}/tests/data/denv1_R1.fastq.gz")  // placeholder for serotype_calls
+                input[1] = file("${projectDir}/tests/data/denv1_R2.fastq.gz")  // placeholder for variants_summary
+                input[2] = file("${projectDir}/tests/data/samplesheet.csv")    // placeholder for ct_data
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.variant_plot },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

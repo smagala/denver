@@ -1,0 +1,17 @@
+// DENV_SEROTYPE_ANALYSIS subworkflow is complex with many module dependencies.
+// Integration testing is done at the pipeline level via tests/default.nf.test.
+// This file serves as a placeholder for future granular subworkflow tests.
+
+nextflow_workflow {
+
+    name "Test Workflow DENV_SEROTYPE_ANALYSIS"
+    script "../main.nf"
+    workflow "DENV_SEROTYPE_ANALYSIS"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "denv_serotype_analysis"
+
+    // Subworkflow integration is tested via the full pipeline test.
+    // Individual module stub tests verify each component works.
+}
