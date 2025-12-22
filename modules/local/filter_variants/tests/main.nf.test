@@ -1,0 +1,36 @@
+nextflow_process {
+
+    name "Test Process FILTER_VARIANTS"
+    script "../main.nf"
+    process "FILTER_VARIANTS"
+
+    tag "modules"
+    tag "modules_local"
+    tag "filter_variants"
+
+    test("stub test") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test', serotype: 'DENV1' ],
+                    file("${projectDir}/tests/data/denv1_R1.fastq.gz")  // placeholder
+                ]
+                input[1] = 0.2
+                input[2] = 0.8
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.filtered_variants },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

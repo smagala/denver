@@ -234,6 +234,7 @@ workflow DENVER {
 
     softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
         .mix(topic_versions_string)
+        .filter { it && it.trim() && it.trim() != '{}' }  // Filter empty entries
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
             name:  'denver_software_'  + 'mqc_'  + 'versions.yml',
