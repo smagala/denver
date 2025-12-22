@@ -1,5 +1,8 @@
 name: falco
-description: Run falco on sequenced reads
+description: |
+  Run falco on sequenced reads.
+  Local module based on nf-core/falco with fix for paired-end read handling.
+  The upstream module has a bug where paired-end outputs overwrite each other.
 keywords:
   - quality control
   - qc

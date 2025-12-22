@@ -79,9 +79,7 @@ def getWorkflowVersion() {
 //
 def processVersionsFromYAML(yaml_file) {
     def yaml = new org.yaml.snakeyaml.Yaml()
-    // Read file content as string for SnakeYAML compatibility
-    def content = yaml_file.text
-    def versions = yaml.load((String) content).collectEntries { k, v -> [k.tokenize(':')[-1], v] }
+    def versions = yaml.load(yaml_file).collectEntries { k, v -> [k.tokenize(':')[-1], v] }
     return yaml.dumpAsMap(versions).trim()
 }
 
