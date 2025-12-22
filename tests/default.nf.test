@@ -1,10 +1,11 @@
 nextflow_pipeline {
 
-    name "Test pipeline"
+    name "Test DENV pipeline"
     script "../main.nf"
     tag "pipeline"
+    tag "denv"
 
-    test("-profile test") {
+    test("DENV1 minimal test") {
 
         when {
             params {
@@ -14,7 +15,19 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
+
+            // Verify key output files exist
             assertAll(
+                // Software versions captured
+                { assert path("${params.outdir}/pipeline_info/denver_software_mqc_versions.yml").exists() },
+
+                // Serotype summary generated
+                { assert path("${params.outdir}/results/serotype_calls.tsv").exists() },
+
+                // MultiQC report generated
+                { assert path("${params.outdir}/multiqc/multiqc_report.html").exists() },
+
+                // Snapshot versions for reproducibility
                 { assert snapshot(
                     path("${params.outdir}/pipeline_info/denver_software_mqc_versions.yml")
                 ).match("versions") }

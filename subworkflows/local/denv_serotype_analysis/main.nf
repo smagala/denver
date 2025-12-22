@@ -109,9 +109,8 @@ workflow DENV_SEROTYPE_ANALYSIS {
         .set { ch_empty_samples }
 
     EMPTY_HANDLER (
-        ch_empty_samples.map { meta, serotype -> meta },
-        min_depth,
-        ch_empty_samples.map { meta, serotype -> serotype }
+        ch_empty_samples,  // tuple of [meta, serotype]
+        min_depth
     )
     ch_versions = ch_versions.mix(EMPTY_HANDLER.out.versions.first().ifEmpty([]))
 
@@ -249,7 +248,7 @@ workflow DENV_SEROTYPE_ANALYSIS {
     ch_serotype_call = SEROTYPE_CALLER.out.serotype_call
         .mix(EMPTY_HANDLER.out.virustype_info)
 
-    ch_variants = FILTER_VARIANTS.out.variants
+    ch_variants = FILTER_VARIANTS.out.filtered_variants
         .mix(EMPTY_HANDLER.out.variants)
 
     emit:

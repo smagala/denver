@@ -1,0 +1,37 @@
+nextflow_process {
+
+    name "Test Process SUMMARIZE_RESULTS"
+    script "../main.nf"
+    process "SUMMARIZE_RESULTS"
+
+    tag "modules"
+    tag "modules_local"
+    tag "summarize_results"
+
+    test("stub test") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = file("${projectDir}/tests/data/denv1_R1.fastq.gz")  // placeholder
+                input[1] = file("${projectDir}/tests/data/denv1_R2.fastq.gz")  // placeholder
+                input[2] = 0.5
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.serotype_calls },
+                { assert process.out.top_calls },
+                { assert process.out.all_info },
+                { assert process.out.low_coverage },
+                { assert process.out.variants_summary },
+                { assert process.out.versions }
+            )
+        }
+    }
+}
