@@ -24,7 +24,7 @@ process FALCO {
     def prefix = task.ext.prefix ?: "${meta.id}"
     if ( reads.toList().size() == 1 ) {
         """
-        falco $args --threads $task.cpus ${reads} -D ${prefix}_fastqc_data.txt -S ${prefix}_summary.txt -R ${prefix}_report.html
+        falco $args --threads $task.cpus ${reads} -D ${prefix}_fastqc_data.txt -S ${prefix}_summary.txt -R ${prefix}_fastqc_report.html
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
@@ -32,8 +32,16 @@ process FALCO {
         END_VERSIONS
         """
     } else {
+        // Handle paired-end reads by running falco on each file separately
+        // This avoids the overwriting issue with multiple input files
         """
-        falco $args --threads $task.cpus ${reads}
+        for read_file in ${reads}; do
+            read_base=\$(basename "\$read_file" | sed 's/.gz\$//' | sed 's/.fastq\$//' | sed 's/.fq\$//')
+            falco $args --threads $task.cpus "\$read_file" \\
+                -D "\${read_base}_fastqc_data.txt" \\
+                -S "\${read_base}_summary.txt" \\
+                -R "\${read_base}_fastqc_report.html"
+        done
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
@@ -45,8 +53,8 @@ process FALCO {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}_data.txt
-    touch ${prefix}_fastqc_data.html
+    touch ${prefix}_fastqc_data.txt
+    touch ${prefix}_fastqc_report.html
     touch ${prefix}_summary.txt
 
     cat <<-END_VERSIONS > versions.yml
