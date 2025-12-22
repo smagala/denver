@@ -80,6 +80,7 @@ def getWorkflowVersion() {
 def processVersionsFromYAML(yaml_file) {
     def yaml = new org.yaml.snakeyaml.Yaml()
     // Read file content as string for SnakeYAML compatibility
+    // Fix: yaml.load() doesn't accept Nextflow Path objects directly
     def content = yaml_file.text
     def versions = yaml.load((String) content).collectEntries { k, v -> [k.tokenize(':')[-1], v] }
     return yaml.dumpAsMap(versions).trim()

@@ -10,9 +10,9 @@
 
 ## Pipeline tools
 
-- [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+- [Falco](https://github.com/smithlabcode/falco)
 
-> Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
+> de Sena Brandine G, Smith AD. Falco: high-speed FastQC emulation for quality control of sequencing data. F1000Research. 2019;8:1874. doi: 10.12688/f1000research.21142.2
 
 - [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
 
