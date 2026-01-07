@@ -110,6 +110,7 @@ workflow DENVER {
 
     //
     // Prepare channels for subworkflow inputs
+    // Key all channels by serotype to enable proper joining
     //
     ch_sample_serotype_combinations
         .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
@@ -117,32 +118,33 @@ workflow DENVER {
         }
         .set { ch_reads }
 
+    // Key reference channels by serotype ID for joining in subworkflow
     ch_sample_serotype_combinations
         .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
-            [ ref_meta, index ]
+            [ meta.serotype, index ]
         }
         .unique()
         .set { ch_bwa_index }
 
     ch_sample_serotype_combinations
         .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
-            [ ref_meta, fasta ]
+            [ meta.serotype, fasta ]
         }
         .unique()
         .set { ch_reference_fasta }
 
     ch_sample_serotype_combinations
         .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
-            bed
+            [ meta.serotype, bed ]
         }
-        .first()
+        .unique()
         .set { ch_primer_bed }
 
     ch_sample_serotype_combinations
         .map { meta, reads, ref_meta, index, fasta, bed, trim_bed ->
-            trim_bed
+            [ meta.serotype, trim_bed ]
         }
-        .first()
+        .unique()
         .set { ch_trim_bed }
 
     //
@@ -211,6 +213,22 @@ workflow DENVER {
         )
         ch_versions = ch_versions.mix(QC_PLOTS.out.versions)
     }
+
+    //
+    // Route QC outputs to MultiQC
+    //
+    ch_multiqc_files = ch_multiqc_files.mix(
+        DENV_SEROTYPE_ANALYSIS.out.ivar_trim_log.collect{it[1]}
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(
+        DENV_SEROTYPE_ANALYSIS.out.samtools_stats.collect{it[1]}
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(
+        DENV_SEROTYPE_ANALYSIS.out.flagstat.collect{it[1]}
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(
+        DENV_SEROTYPE_ANALYSIS.out.nextclade_csv.collect{it[1]}
+    )
 
     //
     // Collate and save software versions

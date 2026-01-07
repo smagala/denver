@@ -1,22 +1,53 @@
-id: "smagala-denver-methods-description"
-description: "Suggested text and references to use when describing pipeline usage within the methods section of a publication."
-section_name: "smagala/denver Methods Description"
+id: "denver-methods-description"
+description: "Pipeline description, methods, and references for the Denver DENV analysis pipeline."
+section_name: "Denver Pipeline Methods"
 section_href: "https://github.com/smagala/denver"
 plot_type: "html"
-## TODO nf-core: Update the HTML below to your preferred methods description, e.g. add publication citation for this pipeline
-## You inject any metadata in the Nextflow '${workflow}' object
 data: |
+  <h4>DENV Pipeline Summary</h4>
+  <p><strong>Purpose:</strong> The Denver pipeline analyzes Dengue virus (DENV) Illumina sequencing data to identify serotypes, generate consensus sequences, and detect within-host variants (iSNVs).</p>
+  <p><strong>Origin:</strong> This pipeline is a Nextflow port of the DENV_pipeline developed by Verity Hill and Chrispin Chaguza (Grubaugh Lab), published in BMC Genomics 2024. The original Snakemake implementation is available at <a href="https://github.com/grubaughlab/DENV_pipeline">https://github.com/grubaughlab/DENV_pipeline</a>.</p>
+  <p><strong>Workflow:</strong></p>
+  <ol>
+    <li><strong>Read QC</strong> - Falco quality assessment of input reads</li>
+    <li><strong>Alignment</strong> - BWA-MEM mapping against all DENV serotypes (DENV1-4 + sylvatic variants)</li>
+    <li><strong>Primer Trimming</strong> - iVar trim removes amplicon primers with Q20 sliding window filtering</li>
+    <li><strong>Consensus Generation</strong> - iVar consensus calling (default: &ge;10x depth, &ge;75% allele frequency)</li>
+    <li><strong>Serotype Assignment</strong> - Coverage-based serotype calling (&ge;50% genome coverage threshold)</li>
+    <li><strong>Variant Detection</strong> - iVar variant calling with iSNV annotation (20-80% frequency range)</li>
+  </ol>
+  <p><strong>Key Outputs:</strong> Consensus sequences, serotype assignments, annotated variant tables, and per-position coverage profiles for each sample&times;serotype combination.</p>
+  <p><strong>Enhancements:</strong> The Nextflow implementation adds MultiQC reporting, uses Falco (3x faster than FastQC), follows ph-core standards with containerized modules, and uses Nextclade for alignment with MAFFT fallback (matching the original's nextalign/MAFFT strategy).</p>
+
+  <h4>CDC AMDPS Containers</h4>
+  <p>Bioinformatics tools are deployed as Docker containers following CDC AMDP standardized build practices to ensure security, reproducibility, and efficiency.</p>
+  <ul>
+    <li><strong>Base Image:</strong> All containers inherit from a hardened Ubuntu 24.04 base image providing AWS S3 access (s5cmd), process monitoring (procps), and non-root execution.</li>
+    <li><strong>Build Strategy:</strong> Only runtime libraries are included in final docker images. Development packages, compilers, and build tools are excluded.</li>
+    <li><strong>Efficiency:</strong> Standard build patterns enable Docker layer sharing across containers.</li>
+    <li><strong>Reproducibility:</strong> Container images are tagged with digests derived from the registry SHA, ensuring identical builds can be traced and reproduced.</li>
+    <li><strong>Security:</strong> Each container build undergoes automated vulnerability scanning for HIGH and CRITICAL CVEs.</li>
+  </ul>
+
   <h4>Methods</h4>
-  <p>Data was processed using smagala/denver v${workflow.manifest.version} ${doi_text} of the nf-core collection of workflows (<a href="https://doi.org/10.1038/s41587-020-0439-x">Ewels <em>et al.</em>, 2020</a>), utilising reproducible software environments from the Bioconda (<a href="https://doi.org/10.1038/s41592-018-0046-7">Grüning <em>et al.</em>, 2018</a>) and Biocontainers (<a href="https://doi.org/10.1093/bioinformatics/btx192">da Veiga Leprevost <em>et al.</em>, 2017</a>) projects.</p>
+  <p>Data was processed using Denver v${workflow.manifest.version} ${doi_text}, a Nextflow implementation following ph-core standards built using the nf-core framework (<a href="https://doi.org/10.1038/s41587-020-0439-x">Ewels <em>et al.</em>, 2020</a>).</p>
   <p>The pipeline was executed with Nextflow v${workflow.nextflow.version} (<a href="https://doi.org/10.1038/nbt.3820">Di Tommaso <em>et al.</em>, 2017</a>) with the following command:</p>
   <pre><code>${workflow.commandLine}</code></pre>
   <p>${tool_citations}</p>
+
   <h4>References</h4>
   <ul>
+    <li>Hill, V., Chaguza, C., & Grubaugh, N. D. (2024). Dengue virus whole genome sequencing and analysis pipeline. BMC Genomics. <a href="https://github.com/grubaughlab/DENV_pipeline">https://github.com/grubaughlab/DENV_pipeline</a></li>
     <li>Di Tommaso, P., Chatzou, M., Floden, E. W., Barja, P. P., Palumbo, E., & Notredame, C. (2017). Nextflow enables reproducible computational workflows. Nature Biotechnology, 35(4), 316-319. doi: <a href="https://doi.org/10.1038/nbt.3820">10.1038/nbt.3820</a></li>
     <li>Ewels, P. A., Peltzer, A., Fillinger, S., Patel, H., Alneberg, J., Wilm, A., Garcia, M. U., Di Tommaso, P., & Nahnsen, S. (2020). The nf-core framework for community-curated bioinformatics pipelines. Nature Biotechnology, 38(3), 276-278. doi: <a href="https://doi.org/10.1038/s41587-020-0439-x">10.1038/s41587-020-0439-x</a></li>
-    <li>Grüning, B., Dale, R., Sjödin, A., Chapman, B. A., Rowe, J., Tomkins-Tinch, C. H., Valieris, R., Köster, J., & Bioconda Team. (2018). Bioconda: sustainable and comprehensive software distribution for the life sciences. Nature Methods, 15(7), 475–476. doi: <a href="https://doi.org/10.1038/s41592-018-0046-7">10.1038/s41592-018-0046-7</a></li>
-    <li>da Veiga Leprevost, F., Grüning, B. A., Alves Aflitos, S., Röst, H. L., Uszkoreit, J., Barsnes, H., Vaudel, M., Moreno, P., Gatto, L., Weber, J., Bai, M., Jimenez, R. C., Sachsenberg, T., Pfeuffer, J., Vera Alvarez, R., Griss, J., Nesvizhskii, A. I., & Perez-Riverol, Y. (2017). BioContainers: an open-source and community-driven framework for software standardization. Bioinformatics (Oxford, England), 33(16), 2580–2582. doi: <a href="https://doi.org/10.1093/bioinformatics/btx192">10.1093/bioinformatics/btx192</a></li>
+    <li>Ewels, P., Magnusson, M., Lundin, S., & K&auml;ller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics, 32(19), 3047-3048. doi: <a href="https://doi.org/10.1093/bioinformatics/btw354">10.1093/bioinformatics/btw354</a></li>
+    <li>Li, H. (2013). Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. arXiv:1303.3997. <a href="https://arxiv.org/abs/1303.3997">arXiv:1303.3997</a></li>
+    <li>Danecek, P., Bonfield, J. K., Liddle, J., Marshall, J., Ohan, V., Pollard, M. O., Whitwham, A., Keane, T., McCarthy, S. A., Davies, R. M., & Li, H. (2021). Twelve years of SAMtools and BCFtools. GigaScience, 10(2), giab008. doi: <a href="https://doi.org/10.1093/gigascience/giab008">10.1093/gigascience/giab008</a></li>
+    <li>Grubaugh, N. D., Gangavarapu, K., Quick, J., Matteson, N. L., De Jesus, J. G., Main, B. J., Tan, A. L., Paul, L. M., Brackney, D. E., Greber, S., Lemey, P., Chouin-Carneiro, T., Ladner, J. T., Pybus, O. G., Benson, W., Holmes, E. C., Andersen, K. G., Andersen, K. G., & Loman, N. J. (2019). An amplicon-based sequencing framework for accurately measuring intrahost virus diversity using PrimalSeq and iVar. Genome Biology, 20(1), 8. doi: <a href="https://doi.org/10.1186/s13059-018-1618-7">10.1186/s13059-018-1618-7</a></li>
+    <li>de Sena Brandine, G., & Smith, A. D. (2021). Falco: high-speed FastQC emulation for quality control of sequencing data. F1000Research, 8, 1874. doi: <a href="https://doi.org/10.12688/f1000research.21142.2">10.12688/f1000research.21142.2</a></li>
+    <li>Aksamentov, I., Roemer, C., Hodcroft, E. B., & Neher, R. A. (2021). Nextclade: clade assignment, mutation calling and quality control for viral genomes. Journal of Open Source Software, 6(67), 3773. doi: <a href="https://doi.org/10.21105/joss.03773">10.21105/joss.03773</a></li>
+    <li>Katoh, K., & Standley, D. M. (2013). MAFFT multiple sequence alignment software version 7: improvements in performance and usability. Molecular Biology and Evolution, 30(4), 772-780. doi: <a href="https://doi.org/10.1093/molbev/mst010">10.1093/molbev/mst010</a></li>
+    <li>Quinlan, A. R., & Hall, I. M. (2010). BEDTools: a flexible suite of utilities for comparing genomic features. Bioinformatics, 26(6), 841-842. doi: <a href="https://doi.org/10.1093/bioinformatics/btq033">10.1093/bioinformatics/btq033</a></li>
     ${tool_bibliography}
   </ul>
   <div class="alert alert-info">
