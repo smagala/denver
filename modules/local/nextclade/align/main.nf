@@ -9,7 +9,8 @@ process NEXTCLADE_ALIGN {
 
     output:
     tuple val(meta), path("*.aln.fasta"), emit: alignment
-    path("versions.yml")               , emit: versions
+    tuple val(meta), path("*.csv")      , emit: csv
+    path("versions.yml")                , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -22,6 +23,7 @@ process NEXTCLADE_ALIGN {
         ${args} \\
         --input-ref ${reference} \\
         --output-fasta ${prefix}.aln.fasta \\
+        --output-csv ${prefix}.nextclade.csv \\
         ${consensus}
 
     cat <<-END_VERSIONS > versions.yml
@@ -34,6 +36,7 @@ process NEXTCLADE_ALIGN {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.aln.fasta
+    echo "seqName;clade;qc.overallScore;qc.overallStatus" > ${prefix}.nextclade.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

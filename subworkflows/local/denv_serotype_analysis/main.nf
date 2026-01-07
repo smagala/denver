@@ -11,6 +11,8 @@ include { BWA_MEM                              } from '../../../modules/nf-core/
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGN } from '../../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_TRIM  } from '../../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_FAIDX                       } from '../../../modules/nf-core/samtools/faidx/main'
+include { SAMTOOLS_STATS                       } from '../../../modules/nf-core/samtools/stats/main'
+include { SAMTOOLS_FLAGSTAT                    } from '../../../modules/nf-core/samtools/flagstat/main'
 include { IVAR_TRIM                            } from '../../../modules/nf-core/ivar/trim/main'
 include { IVAR_CONSENSUS                       } from '../../../modules/nf-core/ivar/consensus/main'
 include { IVAR_VARIANTS                        } from '../../../modules/nf-core/ivar/variants/main'
@@ -24,11 +26,11 @@ include { EMPTY_HANDLER                        } from '../../../modules/local/em
 workflow DENV_SEROTYPE_ANALYSIS {
 
     take:
-    ch_reads           // channel: [ val(meta), [ path(reads) ] ]
-    ch_bwa_index       // channel: [ val(meta_ref), path(index) ]
-    ch_reference       // channel: [ val(meta_ref), path(fasta) ]
-    ch_primer_bed      // channel: path(bed)
-    ch_trim_bed        // channel: path(bed) or "NO_FILE"
+    ch_reads           // channel: [ val(meta), [ path(reads) ] ] - meta includes serotype
+    ch_bwa_index       // channel: [ val(serotype_id), path(index) ]
+    ch_reference       // channel: [ val(serotype_id), path(fasta) ]
+    ch_primer_bed      // channel: [ val(serotype_id), path(bed) ]
+    ch_trim_bed        // channel: [ val(serotype_id), path(bed) ] or "NO_FILE"
     min_depth          // val: minimum depth for consensus
     consensus_threshold // val: frequency threshold for consensus
     variant_threshold  // val: frequency threshold for variants
@@ -41,10 +43,41 @@ workflow DENV_SEROTYPE_ANALYSIS {
     ch_versions = Channel.empty()
 
     //
+    // Join reads with their corresponding reference data by serotype
+    // This ensures each sample×serotype combination gets correct references
+    //
+    ch_reads
+        .map { meta, reads -> [ meta.serotype, meta, reads ] }
+        .combine(ch_bwa_index, by: 0)
+        .combine(ch_reference, by: 0)
+        .combine(ch_primer_bed, by: 0)
+        .combine(ch_trim_bed, by: 0)
+        .map { serotype, meta, reads, index, fasta, bed, trim_bed ->
+            [ meta, reads, index, fasta, bed, trim_bed ]
+        }
+        .set { ch_joined }
+
+    // Extract individual channels for module inputs - maintain 1:1 correspondence
+    // Each sample×serotype gets its own matched reference files
+    ch_joined.map { meta, reads, index, fasta, bed, trim_bed -> [ meta, reads ] }
+        .set { ch_reads_joined }
+
+    ch_joined.map { meta, reads, index, fasta, bed, trim_bed -> [ meta, index ] }
+        .set { ch_index_joined }
+
+    ch_joined.map { meta, reads, index, fasta, bed, trim_bed -> [ meta, fasta ] }
+        .set { ch_fasta_joined }
+
+    // Unique fasta channel for SAMTOOLS_FAIDX (only need one per serotype)
+    ch_reference
+        .map { serotype, fasta -> [ [id: serotype], fasta ] }
+        .set { ch_fasta_for_faidx }
+
+    //
     // MODULE: Index reference FASTA (needed for IVAR_VARIANTS)
     //
     SAMTOOLS_FAIDX (
-        ch_reference,
+        ch_fasta_for_faidx,
         [[:], []],  // existing fai (none)
         false       // don't create sizes file
     )
@@ -55,19 +88,28 @@ workflow DENV_SEROTYPE_ANALYSIS {
     // sort_bam=false allows filtering via args2, then sort separately
     //
     BWA_MEM (
-        ch_reads,
-        ch_bwa_index,
-        ch_reference,
+        ch_reads_joined,
+        ch_index_joined,
+        ch_fasta_joined,
         false  // sort_bam = false
     )
     ch_versions = ch_versions.mix(BWA_MEM.out.versions.first())
 
     //
     // MODULE: Sort aligned BAM and create index
+    // Join BAM with its corresponding fasta for sorting
     //
+    BWA_MEM.out.bam
+        .join(ch_fasta_joined)
+        .multiMap { meta, bam, fasta ->
+            bam: [ meta, bam ]
+            fasta: [ meta, fasta ]
+        }
+        .set { ch_for_sort_align }
+
     SAMTOOLS_SORT_ALIGN (
-        BWA_MEM.out.bam,
-        ch_reference,
+        ch_for_sort_align.bam,
+        ch_for_sort_align.fasta,
         "bai"  // create BAI index
     )
 
@@ -79,11 +121,20 @@ workflow DENV_SEROTYPE_ANALYSIS {
         .set { ch_sorted_bam_bai }
 
     //
+    // Join BAM with correct primer BED by serotype
+    //
+    ch_sorted_bam_bai
+        .map { meta, bam, bai -> [ meta.serotype, meta, bam, bai ] }
+        .combine(ch_primer_bed, by: 0)
+        .map { serotype, meta, bam, bai, bed -> [ [meta, bam, bai], bed ] }
+        .set { ch_bam_with_bed }
+
+    //
     // MODULE: Trim primers with ivar
     //
     IVAR_TRIM (
-        ch_sorted_bam_bai,
-        ch_primer_bed
+        ch_bam_with_bed.map { it[0] },  // [meta, bam, bai]
+        ch_bam_with_bed.map { it[1] }   // bed (per-serotype)
     )
     ch_versions = ch_versions.mix(IVAR_TRIM.out.versions.first())
 
@@ -120,10 +171,19 @@ workflow DENV_SEROTYPE_ANALYSIS {
 
     //
     // MODULE: Sort trimmed BAM
+    // Join trimmed BAM with corresponding fasta
     //
+    ch_trimmed_branch.has_reads
+        .join(ch_fasta_joined)
+        .multiMap { meta, bam, fasta ->
+            bam: [ meta, bam ]
+            fasta: [ meta, fasta ]
+        }
+        .set { ch_for_sort_trim }
+
     SAMTOOLS_SORT_TRIM (
-        ch_trimmed_branch.has_reads,
-        ch_reference,
+        ch_for_sort_trim.bam,
+        ch_for_sort_trim.fasta,
         "bai"
     )
 
@@ -132,26 +192,47 @@ workflow DENV_SEROTYPE_ANALYSIS {
     //
     SAMTOOLS_SORT_TRIM.out.bam
         .join(SAMTOOLS_SORT_TRIM.out.bai)
+        .set { ch_bam_bai }
+
+    ch_bam_bai
         .map { meta, bam, bai -> [ meta, bam ] }
         .set { ch_indexed_bam }
+
+    //
+    // Join indexed BAM with reference FASTA by serotype for downstream modules
+    //
+    ch_indexed_bam
+        .map { meta, bam -> [ meta.serotype, meta, bam ] }
+        .combine(ch_reference, by: 0)
+        .map { serotype, meta, bam, fasta -> [ meta, bam, fasta ] }
+        .set { ch_bam_with_ref }
 
     //
     // MODULE: Generate consensus sequence
     // IVAR_CONSENSUS runs mpileup internally
     //
     IVAR_CONSENSUS (
-        ch_indexed_bam,
-        ch_reference.map { meta, fasta -> fasta },
+        ch_bam_with_ref.map { meta, bam, fasta -> [ meta, bam ] },
+        ch_bam_with_ref.map { meta, bam, fasta -> fasta },
         false  // save_mpileup
     )
     ch_versions = ch_versions.mix(IVAR_CONSENSUS.out.versions.first())
 
     //
+    // Join consensus with reference for alignment
+    //
+    IVAR_CONSENSUS.out.fasta
+        .map { meta, fasta -> [ meta.serotype, meta, fasta ] }
+        .combine(ch_reference, by: 0)
+        .map { serotype, meta, consensus, ref_fasta -> [ meta, consensus, ref_fasta ] }
+        .set { ch_consensus_with_ref }
+
+    //
     // MODULE: Align consensus to reference
     //
     NEXTCLADE_ALIGN (
-        IVAR_CONSENSUS.out.fasta,
-        ch_reference.map { meta, fasta -> fasta }
+        ch_consensus_with_ref.map { meta, consensus, ref -> [ meta, consensus ] },
+        ch_consensus_with_ref.map { meta, consensus, ref -> ref }
     )
     ch_versions = ch_versions.mix(NEXTCLADE_ALIGN.out.versions.first())
 
@@ -172,14 +253,16 @@ workflow DENV_SEROTYPE_ANALYSIS {
     //
     ch_alignment_branch.empty
         .join(IVAR_CONSENSUS.out.fasta)
-        .map { meta, empty_aln, consensus -> [ meta, consensus ] }
+        .map { meta, empty_aln, consensus -> [ meta.serotype, meta, consensus ] }
+        .combine(ch_reference, by: 0)
+        .map { serotype, meta, consensus, ref_fasta -> [ meta, consensus, ref_fasta ] }
         .set { ch_for_mafft }
 
     // Prepare inputs for MAFFT: reference as main fasta, consensus as addfragments
     MAFFT_ALIGN (
-        ch_reference,              // fasta (reference)
+        ch_for_mafft.map { meta, consensus, ref -> [ [id: meta.serotype], ref ] },  // fasta (reference)
         [[:], []],                 // add
-        ch_for_mafft,              // addfragments (consensus)
+        ch_for_mafft.map { meta, consensus, ref -> [ meta, consensus ] },  // addfragments (consensus)
         [[:], []],                 // addfull
         [[:], []],                 // addprofile
         [[:], []],                 // addlong
@@ -195,23 +278,41 @@ workflow DENV_SEROTYPE_ANALYSIS {
         .set { ch_alignments }
 
     //
+    // Join alignments with trim BED by serotype for SEROTYPE_CALLER
+    //
+    ch_alignments
+        .map { meta, aln -> [ meta.serotype, meta, aln ] }
+        .combine(ch_trim_bed, by: 0)
+        .map { serotype, meta, aln, bed -> [ meta, aln, bed ] }
+        .set { ch_aln_with_trim_bed }
+
+    //
     // MODULE: Calculate coverage and call serotype
     //
     SEROTYPE_CALLER (
-        ch_alignments,
-        ch_trim_bed,
+        ch_aln_with_trim_bed.map { meta, aln, bed -> [ meta, aln ] },
+        ch_aln_with_trim_bed.map { meta, aln, bed -> bed },
         coverage_threshold
     )
     ch_versions = ch_versions.mix(SEROTYPE_CALLER.out.versions.first())
+
+    //
+    // Join BAM with reference and FAI for variant calling
+    //
+    ch_bam_with_ref
+        .map { meta, bam, fasta -> [ meta.serotype, meta, bam, fasta ] }
+        .combine(SAMTOOLS_FAIDX.out.fai.map { ref_meta, fai -> [ ref_meta.id, fai ] }, by: 0)
+        .map { serotype, meta, bam, fasta, fai -> [ meta, bam, fasta, fai ] }
+        .set { ch_bam_ref_fai }
 
     //
     // MODULE: Call variants
     // IVAR_VARIANTS runs mpileup internally with different params
     //
     IVAR_VARIANTS (
-        ch_indexed_bam,
-        ch_reference.map { meta, fasta -> fasta },
-        SAMTOOLS_FAIDX.out.fai.map { meta, fai -> fai },
+        ch_bam_ref_fai.map { meta, bam, fasta, fai -> [ meta, bam ] },
+        ch_bam_ref_fai.map { meta, bam, fasta, fai -> fasta },
+        ch_bam_ref_fai.map { meta, bam, fasta, fai -> fai },
         [],    // No GFF
         false  // save_mpileup
     )
@@ -226,6 +327,32 @@ workflow DENV_SEROTYPE_ANALYSIS {
         isnv_max_freq
     )
     ch_versions = ch_versions.mix(FILTER_VARIANTS.out.versions.first())
+
+    //
+    // MODULE: Generate BAM statistics for MultiQC
+    //
+    ch_bam_bai
+        .map { meta, bam, bai -> [ meta.serotype, meta, bam, bai ] }
+        .combine(ch_reference, by: 0)
+        .map { serotype, meta, bam, bai, fasta -> [ [ meta, bam, bai ], [ [id: serotype], fasta ] ] }
+        .multiMap { bam_tuple, ref_tuple ->
+            bam: bam_tuple
+            ref: ref_tuple
+        }
+        .set { ch_for_stats }
+
+    SAMTOOLS_STATS (
+        ch_for_stats.bam,
+        ch_for_stats.ref
+    )
+
+    //
+    // MODULE: Generate BAM flagstat for MultiQC
+    //
+    SAMTOOLS_FLAGSTAT (
+        ch_bam_bai
+    )
+    ch_versions = ch_versions.mix(SAMTOOLS_FLAGSTAT.out.versions.first())
 
     //
     // MODULE: Calculate depth coverage
@@ -252,11 +379,16 @@ workflow DENV_SEROTYPE_ANALYSIS {
         .mix(EMPTY_HANDLER.out.variants)
 
     emit:
-    consensus      = IVAR_CONSENSUS.out.fasta       // channel: [ val(meta), path(fasta) ]
-    alignment      = ch_alignments                   // channel: [ val(meta), path(aln) ]
-    serotype_call  = ch_serotype_call               // channel: [ val(meta), path(tsv) ]
-    variants       = ch_variants                    // channel: [ val(meta), path(tsv) ]
+    consensus      = IVAR_CONSENSUS.out.fasta         // channel: [ val(meta), path(fasta) ]
+    alignment      = ch_alignments                     // channel: [ val(meta), path(aln) ]
+    serotype_call  = ch_serotype_call                 // channel: [ val(meta), path(tsv) ]
+    variants       = ch_variants                      // channel: [ val(meta), path(tsv) ]
     depth          = BEDTOOLS_GENOMECOV.out.genomecov // channel: [ val(meta), path(txt) ]
-    bam            = ch_indexed_bam                 // channel: [ val(meta), path(bam) ]
-    versions       = ch_versions                    // channel: [ path(versions.yml) ]
+    bam            = ch_indexed_bam                   // channel: [ val(meta), path(bam) ]
+    // MultiQC-compatible outputs
+    ivar_trim_log  = IVAR_TRIM.out.log                // channel: [ val(meta), path(log) ]
+    samtools_stats = SAMTOOLS_STATS.out.stats         // channel: [ val(meta), path(stats) ]
+    flagstat       = SAMTOOLS_FLAGSTAT.out.flagstat   // channel: [ val(meta), path(flagstat) ]
+    nextclade_csv  = NEXTCLADE_ALIGN.out.csv          // channel: [ val(meta), path(csv) ]
+    versions       = ch_versions                      // channel: [ path(versions.yml) ]
 }
