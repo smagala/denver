@@ -102,6 +102,20 @@
                     "help_text": "Text file with serotype names (e.g., DENV1, DENV2, DENV3, DENV4, DENV2_sylvatic, DENV4_sylvatic).",
                     "fa_icon": "fas fa-list"
                 },
+                "use_prebuilt_bwa_index": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use pre-built BWA indexes from references directory.",
+                    "help_text": "When enabled, loads pre-built BWA indexes from {references_base}/{serotype}_bwa/ directories instead of indexing at runtime. Pre-indexes can be generated with the preindex_references.sh script.",
+                    "fa_icon": "fas fa-rocket"
+                },
+                "use_prebuilt_fai": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use pre-built samtools faidx indexes from references directory.",
+                    "help_text": "When enabled, loads pre-built .fai files from references directory instead of indexing at runtime. Pre-indexes can be generated with the preindex_references.sh script.",
+                    "fa_icon": "fas fa-rocket"
+                },
                 "min_depth": {
                     "type": "integer",
                     "default": 10,
