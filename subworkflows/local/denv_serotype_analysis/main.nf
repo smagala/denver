@@ -74,14 +74,32 @@ workflow DENV_SEROTYPE_ANALYSIS {
         .set { ch_fasta_for_faidx }
 
     //
-    // MODULE: Index reference FASTA (needed for IVAR_VARIANTS)
+    // MODULE: Index reference FASTA (or load pre-built)
+    // Needed for IVAR_VARIANTS
     //
-    SAMTOOLS_FAIDX (
-        ch_fasta_for_faidx,
-        [[:], []],  // existing fai (none)
-        false       // don't create sizes file
-    )
-    ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions.first())
+    if (params.use_prebuilt_fai) {
+        //
+        // Load pre-built FAI indexes
+        //
+        ch_fasta_for_faidx
+            .map { meta, fasta ->
+                def fai = file("${fasta}.fai", checkIfExists: true)
+                [ meta, fai ]
+            }
+            .set { ch_fai }
+    } else {
+        //
+        // Build FAI index at runtime
+        //
+        SAMTOOLS_FAIDX (
+            ch_fasta_for_faidx,
+            [[:], []],  // existing fai (none)
+            false       // don't create sizes file
+        )
+        ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions.first())
+
+        ch_fai = SAMTOOLS_FAIDX.out.fai
+    }
 
     //
     // MODULE: Align reads with BWA MEM
@@ -301,7 +319,7 @@ workflow DENV_SEROTYPE_ANALYSIS {
     //
     ch_bam_with_ref
         .map { meta, bam, fasta -> [ meta.serotype, meta, bam, fasta ] }
-        .combine(SAMTOOLS_FAIDX.out.fai.map { ref_meta, fai -> [ ref_meta.id, fai ] }, by: 0)
+        .combine(ch_fai.map { ref_meta, fai -> [ ref_meta.id, fai ] }, by: 0)
         .map { serotype, meta, bam, fasta, fai -> [ meta, bam, fasta, fai ] }
         .set { ch_bam_ref_fai }
 

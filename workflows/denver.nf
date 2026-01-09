@@ -68,26 +68,41 @@ workflow DENVER {
         .set { ch_references }
 
     //
-    // MODULE: Create BWA index for each serotype reference
+    // MODULE: Create BWA index for each serotype reference (or load pre-built)
     //
-    ch_references
-        .map { meta, fasta, bed, trim_bed -> [ meta, fasta ] }
-        .set { ch_fasta_for_index }
+    if (params.use_prebuilt_bwa_index) {
+        //
+        // Load pre-built BWA indexes
+        //
+        ch_references
+            .map { meta, fasta, bed, trim_bed ->
+                def index_dir = file("${params.references_base}/${meta.id}_bwa", checkIfExists: true)
+                [ meta, index_dir, fasta, bed, trim_bed ]
+            }
+            .set { ch_indexed_references }
+    } else {
+        //
+        // Build BWA index at runtime
+        //
+        ch_references
+            .map { meta, fasta, bed, trim_bed -> [ meta, fasta ] }
+            .set { ch_fasta_for_index }
 
-    BWA_INDEX (
-        ch_fasta_for_index
-    )
-    ch_versions = ch_versions.mix(BWA_INDEX.out.versions.first())
+        BWA_INDEX (
+            ch_fasta_for_index
+        )
+        ch_versions = ch_versions.mix(BWA_INDEX.out.versions.first())
 
-    //
-    // Prepare reference channels with index
-    //
-    BWA_INDEX.out.index
-        .join(ch_references.map { meta, fasta, bed, trim_bed -> [ meta, fasta, bed, trim_bed ] })
-        .map { meta, index, fasta, bed, trim_bed ->
-            [ meta, index, fasta, bed, trim_bed ]
-        }
-        .set { ch_indexed_references }
+        //
+        // Prepare reference channels with index
+        //
+        BWA_INDEX.out.index
+            .join(ch_references.map { meta, fasta, bed, trim_bed -> [ meta, fasta, bed, trim_bed ] })
+            .map { meta, index, fasta, bed, trim_bed ->
+                [ meta, index, fasta, bed, trim_bed ]
+            }
+            .set { ch_indexed_references }
+    }
 
     //
     // Cross samples with serotypes to create all combinations
