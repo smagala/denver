@@ -7,12 +7,12 @@ report_comment: >
   analysis pipeline for Dengue virus serotype identification, consensus generation, and variant detection.
 
 report_section_order:
+  "smagala-denver-summary":
+    order: -1002
+  "smagala-denver-methods-description":
+    order: -1001
   software_versions:
     order: -1000
-  "smagala-denver-summary":
-    order: -1001
-  "smagala-denver-methods-description":
-    order: -1002
 
 module_order:
   - fastqc
