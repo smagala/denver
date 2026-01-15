@@ -9,9 +9,9 @@ report_comment: >
 report_section_order:
   software_versions:
     order: -1000
-  "denver-summary":
+  "smagala-denver-summary":
     order: -1001
-  "denver-methods-description":
+  "smagala-denver-methods-description":
     order: -1002
 
 module_order:
