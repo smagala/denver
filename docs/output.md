@@ -1,4 +1,4 @@
-# smagala/denver: Output
+# ph-core/denver: Output
 
 ## Introduction
 

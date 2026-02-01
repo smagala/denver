@@ -17,7 +17,7 @@
                         "size": "Large",
                         "weight": "Bolder",
                         "color": "<% if (success) { %>Good<% } else { %>Attention<%} %>",
-                        "text": "smagala/denver v${version} - ${runName}",
+                        "text": "ph-core/denver v${version} - ${runName}",
                         "wrap": true
                     },
                     {

@@ -9,7 +9,7 @@ tools:
       description: |
         Creates empty TSV files with correct headers for samples
         that failed to map to any reference sequence.
-      homepage: https://github.com/smagala/denver
+      homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
 input:

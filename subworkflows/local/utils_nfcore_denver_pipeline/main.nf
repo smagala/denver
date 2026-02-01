@@ -1,5 +1,5 @@
 //
-// Subworkflow with functionality specific to the smagala/denver pipeline
+// Subworkflow with functionality specific to the ph-core/denver pipeline
 //
 
 /*

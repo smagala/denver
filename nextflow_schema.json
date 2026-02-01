@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/smagala/denver/main/nextflow_schema.json",
-    "title": "smagala/denver pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/cdcent/oamd-bio-denver/master/nextflow_schema.json",
+    "title": "ph-core/denver pipeline parameters",
     "description": "nf-core style NextFlow pipeline for Dengue virus (DENV) analysis",
     "type": "object",
     "$defs": {

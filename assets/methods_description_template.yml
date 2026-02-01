@@ -1,7 +1,7 @@
 id: "denver-methods-description"
 description: "Pipeline description, methods, and references for the Denver DENV analysis pipeline."
 section_name: "Denver Pipeline Methods"
-section_href: "https://github.com/smagala/denver"
+section_href: "https://github.com/cdcent/oamd-bio-denver"
 plot_type: "html"
 data: |
   <h4>DENV Pipeline Summary</h4>

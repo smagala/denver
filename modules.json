@@ -1,6 +1,6 @@
 {
-    "name": "smagala/denver",
-    "homePage": "https://github.com/smagala/denver",
+    "name": "ph-core/denver",
+    "homePage": "https://github.com/cdcent/oamd-bio-denver",
     "repos": {
         "https://github.com/nf-core/modules.git": {
             "modules": {

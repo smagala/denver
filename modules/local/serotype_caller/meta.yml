@@ -10,7 +10,7 @@ tools:
       description: |
         Custom Python script for DENV serotype calling based on alignment coverage.
         Determines serotype when coverage exceeds threshold (default 50%).
-      homepage: https://github.com/smagala/denver
+      homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
 input:

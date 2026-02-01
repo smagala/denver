@@ -1,4 +1,4 @@
-# smagala/denver: Usage
+# ph-core/denver: Usage
 
 ## Introduction
 
@@ -86,7 +86,7 @@ DENV4_sylvatic
 The typical command for running the pipeline is:
 
 ```bash
-nextflow run smagala/denver \
+nextflow run cdcent/oamd-bio-denver \
     --input samplesheet.csv \
     --outdir results \
     --references_base /path/to/references \
@@ -113,7 +113,7 @@ This will launch the pipeline with the `docker` configuration profile.
 ### Example with parameters
 
 ```bash
-nextflow run smagala/denver \
+nextflow run cdcent/oamd-bio-denver \
     --input samplesheet.csv \
     --outdir results \
     --references_base /data/denv_references \
@@ -139,7 +139,7 @@ coverage_threshold: 0.6
 Then run with:
 
 ```bash
-nextflow run smagala/denver -profile docker -params-file params.yaml
+nextflow run cdcent/oamd-bio-denver -profile docker -params-file params.yaml
 ```
 
 ## Core Nextflow arguments
@@ -167,7 +167,7 @@ Multiple profiles can be loaded: `-profile test,docker`
 Specify this when restarting a pipeline. Nextflow will use cached results from any pipeline steps where the inputs are the same:
 
 ```bash
-nextflow run smagala/denver -profile docker -resume
+nextflow run cdcent/oamd-bio-denver -profile docker -resume
 ```
 
 ### `-c`
@@ -175,7 +175,7 @@ nextflow run smagala/denver -profile docker -resume
 Specify the path to a custom config file:
 
 ```bash
-nextflow run smagala/denver -profile docker -c custom.config
+nextflow run cdcent/oamd-bio-denver -profile docker -c custom.config
 ```
 
 ## Output
@@ -208,4 +208,4 @@ process {
 ### Getting help
 
 - Check the [nf-core documentation](https://nf-co.re/docs/usage/introduction)
-- Open an issue on the [GitHub repository](https://github.com/smagala/denver/issues)
+- Open an issue on the [GitHub repository](https://github.com/cdcent/oamd-bio-denver/issues)

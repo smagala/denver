@@ -10,7 +10,7 @@ tools:
       description: |
         Creates scatter plots for variant counts and Ct values vs coverage,
         colored by serotype. Uses matplotlib with Agg backend.
-      homepage: https://github.com/smagala/denver
+      homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
 input:

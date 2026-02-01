@@ -9,7 +9,7 @@ tools:
       description: |
         Aggregates serotype calls and variant counts from all samples
         into summary tables for reporting and downstream analysis.
-      homepage: https://github.com/smagala/denver
+      homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
 input:

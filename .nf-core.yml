@@ -26,12 +26,16 @@ lint:
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
-  # nf-test workflow disabled until CDC-controlled runners with ECR access available
-  # See tech debt issue #28
-  actions_nf_test: false
+    - .github/workflows/branch.yml
+    - .github/workflows/clean-up.yml
+    - .github/workflows/download_pipeline.yml
+    - .github/workflows/fix_linting.yml
+    - .github/workflows/linting_comment.yml
+    - .github/workflows/template-version-comment.yml
+  actions_nf_test: true
 
 template:
-  org: smagala
+  org: ph-core
   name: denver
   description: nf-core style NextFlow pipeline for Dengue virus (DENV) analysis
   author: smagala

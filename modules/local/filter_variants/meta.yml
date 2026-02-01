@@ -11,7 +11,7 @@ tools:
         Filters ivar variant calls to identify intrahost SNVs (iSNVs).
         Keeps variants with allele frequency between 0.2 and 0.8,
         indicating true intrahost variation.
-      homepage: https://github.com/smagala/denver
+      homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
 input:

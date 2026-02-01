@@ -1,0 +1,27 @@
+name: Run Pipeline Tests CI/CD
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: "Run comma separated tests on the pipeline (Ex: tests/default.nf.test)"
+        required: false
+        default: "tests/default.nf.test"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  pipeline-test:
+    uses: cdcent/oamd-bio-gh-actions/.github/workflows/nf-test.yml@main
+    with:
+      component_type: "pipeline"
+      run_on_aws: true
+      aws_s3_bucket: "amdp-dev-bio-development-work"
+      max_parallel: 2
+      run_tests: ${{ inputs.run_tests || 'tests/default.nf.test' }}
+      nft_profile: "test,dev"
+      nxf_version: "24.10.5"
+    secrets: inherit
