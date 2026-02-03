@@ -2,6 +2,17 @@
     "name": "ph-core/denver",
     "homePage": "https://github.com/cdcent/oamd-bio-denver",
     "repos": {
+        "https://github.com/cdcent/oamd-bio-ph-core.git": {
+            "modules": {
+                "ph-core": {
+                    "falco": {
+                        "branch": "master",
+                        "git_sha": "cb9df19e77f37f074cba2a384699f343992ad4bf",
+                        "installed_by": ["modules"]
+                    }
+                }
+            }
+        },
         "https://github.com/nf-core/modules.git": {
             "modules": {
                 "nf-core": {

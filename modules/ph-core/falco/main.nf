@@ -4,9 +4,7 @@ process FALCO {
 
 
     conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/falco:1.2.1--h867801b_3':
-        'biocontainers/falco:1.2.1--h867801b_3' }"
+    container '025066257930.dkr.ecr.us-east-1.amazonaws.com/oamd-bio-falco:1.2.5_993520e_20260202'
 
     input:
     tuple val(meta), path(reads)
@@ -36,7 +34,11 @@ process FALCO {
         // This avoids the overwriting issue with multiple input files
         """
         for read_file in ${reads}; do
-            read_base=\$(basename "\$read_file" | sed 's/.gz\$//' | sed 's/.fastq\$//' | sed 's/.fq\$//')
+            read_base=\$(basename "\$read_file")
+            read_base=\${read_base%.fastq.gz}
+            read_base=\${read_base%.fq.gz}
+            read_base=\${read_base%.fastq}
+            read_base=\${read_base%.fq}
             falco $args --threads $task.cpus "\$read_file" \\
                 -D "\${read_base}_fastqc_data.txt" \\
                 -S "\${read_base}_summary.txt" \\
@@ -59,7 +61,7 @@ process FALCO {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        falco: \$( falco --version | sed -e "s/falco v//g" )
+        falco:\$( falco --version | sed -e "s/falco//g" )
     END_VERSIONS
     """
 }

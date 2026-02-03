@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FALCO                       } from '../modules/local/falco/main'
+include { FALCO                       } from '../modules/ph-core/falco/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { BWA_INDEX                   } from '../modules/nf-core/bwa/index/main'
 include { SUMMARIZE_RESULTS           } from '../modules/local/summarize_results/main'

@@ -1,15 +1,15 @@
 name: falco
 description: |
   Run falco on sequenced reads.
-  Local module based on nf-core/falco with fix for paired-end read handling.
-  The upstream module has a bug where paired-end outputs overwrite each other.
+  Based on nf-core/falco with fix for paired-end read handling.
+  The upstream nf-core module has a bug where paired-end outputs overwrite each other.
 keywords:
   - quality control
   - qc
   - adapters
   - fastq
 tools:
-  - fastqc:
+  - falco:
       description: "falco is a drop-in C++ implementation of FastQC to assess the quality
         of sequence reads."
       homepage: "https://falco.readthedocs.io/"
@@ -38,7 +38,7 @@ output:
       - "*.html":
           type: file
           description: FastQC like report
-          pattern: "*_{fastqc_report.html}"
+          pattern: "*_fastqc_report.html"
           ontologies: []
   txt:
     - - meta:
@@ -49,7 +49,7 @@ output:
       - "*.txt":
           type: file
           description: falco report data
-          pattern: "*_{data.txt}"
+          pattern: "*_fastqc_data.txt"
           ontologies: []
   versions:
     - versions.yml:
@@ -60,5 +60,6 @@ output:
           - edam: http://edamontology.org/format_3750 # YAML
 authors:
   - "@lucacozzuto"
+  - "@smagala"
 maintainers:
-  - "@lucacozzuto"
+  - "@smagala"
