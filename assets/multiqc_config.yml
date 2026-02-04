@@ -7,11 +7,11 @@ report_comment: >
   analysis pipeline for Dengue virus serotype identification, consensus generation, and variant detection.
 
 report_section_order:
-  "phcore-denver-summary":
+  "ph-core-denver-summary":
     order: -1002
   software_versions:
     order: -1001
-  "phcore-denver-methods-description":
+  "ph-core-denver-methods-description":
     order: -1000
 
 module_order:

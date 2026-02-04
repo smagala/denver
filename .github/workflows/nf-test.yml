@@ -27,7 +27,7 @@ jobs:
   nf-test:
     strategy:
       matrix:
-        NXF_VER: ["24.10.5"]
+        NXF_VER: ["25.04.0"]
     uses: cdcent/oamd-bio-gh-actions/.github/workflows/nf-test.yml@main
     with:
       run_on_aws: true
