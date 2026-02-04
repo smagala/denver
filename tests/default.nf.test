@@ -24,8 +24,8 @@ nextflow_pipeline {
                 // Serotype summary generated
                 { assert path("${params.outdir}/results/serotype_calls.tsv").exists() },
 
-                // MultiQC report generated
-                { assert path("${params.outdir}/multiqc/multiqc_report.html").exists() },
+                // MultiQC report generated (filename includes pipeline name prefix)
+                { assert new File("${params.outdir}/multiqc").listFiles().any { it.name.endsWith('_multiqc_report.html') } },
 
                 // Snapshot versions for reproducibility
                 { assert snapshot(

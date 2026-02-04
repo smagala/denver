@@ -181,7 +181,7 @@ workflow DENV_SEROTYPE_ANALYSIS {
         ch_empty_samples,  // tuple of [meta, serotype]
         min_depth
     )
-    ch_versions = ch_versions.mix(EMPTY_HANDLER.out.versions.first().ifEmpty([]))
+    ch_versions = ch_versions.mix(EMPTY_HANDLER.out.versions.first())
 
     //
     // Continue processing for samples with reads
@@ -286,7 +286,7 @@ workflow DENV_SEROTYPE_ANALYSIS {
         [[:], []],                 // addlong
         false                      // compress
     )
-    ch_versions = ch_versions.mix(MAFFT_ALIGN.out.versions.first().ifEmpty([]))
+    ch_versions = ch_versions.mix(MAFFT_ALIGN.out.versions.first())
 
     //
     // Combine alignment outputs
