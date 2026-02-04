@@ -38,7 +38,7 @@ template:
   org: ph-core
   name: denver
   description: nf-core style NextFlow pipeline for Dengue virus (DENV) analysis
-  author: smagala
+  author: James Smagala
   version: 1.0.0dev
   force: true
   outdir: denver

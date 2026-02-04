@@ -38,7 +38,7 @@ params.fasta = getGenomeAttribute('fasta')
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow SMAGALA_DENVER {
+workflow PHCORE_DENVER {
 
     take:
     samplesheet // channel: samplesheet read in from --input
@@ -81,7 +81,7 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    SMAGALA_DENVER (
+    PHCORE_DENVER (
         PIPELINE_INITIALISATION.out.samplesheet
     )
     //
@@ -94,7 +94,7 @@ workflow {
         params.outdir,
         params.monochrome_logs,
         params.hook_url,
-        SMAGALA_DENVER.out.multiqc_report
+        PHCORE_DENVER.out.multiqc_report
     )
 }
 
