@@ -1,12 +1,20 @@
 {
-    "versions": {
+    "results": {
         "content": [
-            "denver_software_mqc_versions.yml:md5,a60d9f9aff2614b5b09171a6acda6978"
+            "denver_software_mqc_versions.yml:md5,a60d9f9aff2614b5b09171a6acda6978",
+            "serotype_calls.tsv:md5,7c9acfc6bd7f9fb0d08c90b98bf24697",
+            "top_calls.tsv:md5,7c9acfc6bd7f9fb0d08c90b98bf24697",
+            "all_info.tsv:md5,7c9acfc6bd7f9fb0d08c90b98bf24697",
+            "variants_summary.tsv:md5,6bbaf4db65ae946528e097703b24bc7a",
+            "low_coverage_calls.csv:md5,6061114878accc22271c71d9e11b0d10",
+            "denv1_test_DENV1_serotype_call.tsv:md5,7c9acfc6bd7f9fb0d08c90b98bf24697",
+            "denv1_test_DENV1_variants_frequency.tsv:md5,e4d3fd9d2969b01887c9c1a67eae4d77",
+            "denv1_test.DENV1.5.cons.fa:md5,e2de4e4dcc4823f58acf1ad257e8a617"
         ],
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.3"
         },
-        "timestamp": "2026-02-22T21:40:56.142282776"
+        "timestamp": "2026-02-22T22:19:09.731339152"
     }
 }

@@ -16,21 +16,44 @@ nextflow_pipeline {
         then {
             assert workflow.success
 
-            // Verify key output files exist
             assertAll(
                 // Software versions captured
                 { assert path("${params.outdir}/pipeline_info/denver_software_mqc_versions.yml").exists() },
 
-                // Serotype summary generated
+                // Core result files exist and are deterministic
                 { assert path("${params.outdir}/results/serotype_calls.tsv").exists() },
+                { assert path("${params.outdir}/results/top_calls.tsv").exists() },
+                { assert path("${params.outdir}/results/all_info.tsv").exists() },
+                { assert path("${params.outdir}/results/variants_summary.tsv").exists() },
+                { assert path("${params.outdir}/results/low_coverage_calls.csv").exists() },
+                { assert path("${params.outdir}/results/variant_plot.pdf").exists() },
 
-                // MultiQC report generated (filename includes pipeline name prefix)
+                // Per-sample outputs exist
+                { assert path("${params.outdir}/consensus/denv1_test.DENV1.5.cons.fa").exists() },
+                { assert path("${params.outdir}/alignment/denv1_test.DENV1.5.out.aln.fasta").exists() },
+                { assert path("${params.outdir}/serotype_calls/denv1_test_DENV1_serotype_call.tsv").exists() },
+                { assert path("${params.outdir}/variants/denv1_test_DENV1_variants_frequency.tsv").exists() },
+
+                // QC outputs exist
+                { assert path("${params.outdir}/qc/samtools_stats/denv1_test.DENV1.stats").exists() },
+                { assert path("${params.outdir}/qc/samtools_flagstat/denv1_test.DENV1.flagstat").exists() },
+                { assert path("${params.outdir}/qc/nextclade/denv1_test.DENV1.5.out.nextclade.csv").exists() },
+
+                // MultiQC report generated
                 { assert new File("${params.outdir}/multiqc").listFiles().any { it.name.endsWith('_multiqc_report.html') } },
 
-                // Snapshot versions for reproducibility
+                // Snapshot deterministic result files for regression detection
                 { assert snapshot(
-                    path("${params.outdir}/pipeline_info/denver_software_mqc_versions.yml")
-                ).match("versions") }
+                    path("${params.outdir}/pipeline_info/denver_software_mqc_versions.yml"),
+                    path("${params.outdir}/results/serotype_calls.tsv"),
+                    path("${params.outdir}/results/top_calls.tsv"),
+                    path("${params.outdir}/results/all_info.tsv"),
+                    path("${params.outdir}/results/variants_summary.tsv"),
+                    path("${params.outdir}/results/low_coverage_calls.csv"),
+                    path("${params.outdir}/serotype_calls/denv1_test_DENV1_serotype_call.tsv"),
+                    path("${params.outdir}/variants/denv1_test_DENV1_variants_frequency.tsv"),
+                    path("${params.outdir}/consensus/denv1_test.DENV1.5.cons.fa")
+                ).match("results") }
             )
         }
     }

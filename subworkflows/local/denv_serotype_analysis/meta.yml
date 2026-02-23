@@ -1,0 +1,140 @@
+name: "denv_serotype_analysis"
+description: |
+  Per-sample, per-serotype processing pipeline for DENV analysis.
+  Runs alignment through variant calling for each sample x serotype combination.
+keywords:
+  - dengue
+  - serotype
+  - alignment
+  - variant calling
+  - consensus
+
+modules:
+  - bwa/mem
+  - samtools/sort
+  - samtools/faidx
+  - samtools/stats
+  - samtools/flagstat
+  - ivar/trim
+  - ivar/consensus
+  - ivar/variants
+  - bedtools/genomecov
+  - mafft/align
+  - nextclade/align
+  - serotype_caller
+  - filter_variants
+  - empty_handler
+
+input:
+  - ch_reads:
+      type: channel
+      description: |
+        Sample reads with serotype metadata.
+        Structure: [ val(meta), [ path(reads) ] ]
+        meta must include 'serotype' key for reference matching.
+  - ch_bwa_index:
+      type: channel
+      description: |
+        BWA index per serotype.
+        Structure: [ val(serotype_id), path(index) ]
+  - ch_reference:
+      type: channel
+      description: |
+        Reference FASTA per serotype.
+        Structure: [ val(serotype_id), path(fasta) ]
+  - ch_primer_bed:
+      type: channel
+      description: |
+        Primer BED file per serotype for ivar trim.
+        Structure: [ val(serotype_id), path(bed) ]
+  - ch_trim_bed:
+      type: channel
+      description: |
+        Trim BED file per serotype for coverage calculation.
+        Pass "NO_FILE" if not available.
+        Structure: [ val(serotype_id), path(bed) ]
+  - min_depth:
+      type: val
+      description: Minimum depth for consensus calling
+  - consensus_threshold:
+      type: val
+      description: Frequency threshold for consensus base calling (0-1)
+  - variant_threshold:
+      type: val
+      description: Frequency threshold for variant calling (0-1)
+  - coverage_threshold:
+      type: val
+      description: Coverage threshold for serotype call (0-1)
+  - isnv_min_freq:
+      type: val
+      description: Minimum allele frequency for iSNV filtering
+  - isnv_max_freq:
+      type: val
+      description: Maximum allele frequency for iSNV filtering
+  - read_cap:
+      type: val
+      description: Maximum depth for mpileup
+
+output:
+  - consensus:
+      type: channel
+      description: |
+        Consensus FASTA sequences.
+        Structure: [ val(meta), path(fasta) ]
+  - alignment:
+      type: channel
+      description: |
+        Final alignment (nextalign or MAFFT fallback).
+        Structure: [ val(meta), path(aln) ]
+  - serotype_call:
+      type: channel
+      description: |
+        Serotype call TSV with coverage statistics.
+        Includes empty handler output for samples with no reads.
+        Structure: [ val(meta), path(tsv) ]
+  - variants:
+      type: channel
+      description: |
+        Filtered iSNV variants.
+        Includes empty handler output for samples with no reads.
+        Structure: [ val(meta), path(tsv) ]
+  - depth:
+      type: channel
+      description: |
+        Coverage depth from bedtools genomecov.
+        Structure: [ val(meta), path(txt) ]
+  - bam:
+      type: channel
+      description: |
+        Sorted, trimmed BAM files.
+        Structure: [ val(meta), path(bam) ]
+  - ivar_trim_log:
+      type: channel
+      description: |
+        ivar trim log for MultiQC.
+        Structure: [ val(meta), path(log) ]
+  - samtools_stats:
+      type: channel
+      description: |
+        Samtools stats for MultiQC.
+        Structure: [ val(meta), path(stats) ]
+  - flagstat:
+      type: channel
+      description: |
+        Samtools flagstat for MultiQC.
+        Structure: [ val(meta), path(flagstat) ]
+  - nextclade_csv:
+      type: channel
+      description: |
+        Nextclade alignment CSV for MultiQC.
+        Structure: [ val(meta), path(csv) ]
+  - versions:
+      type: channel
+      description: |
+        Software versions from all modules.
+        Structure: [ path(versions.yml) ]
+
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"

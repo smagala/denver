@@ -1,0 +1,61 @@
+name: "utils_nfcore_denver_pipeline"
+description: |
+  Pipeline utility subworkflow for initialization and completion.
+  Handles parameter validation, samplesheet parsing, completion emails,
+  and notification hooks. Based on nf-core template.
+keywords:
+  - utility
+  - initialization
+  - completion
+  - samplesheet
+
+modules:
+  - utils_nfschema_plugin
+  - utils_nfcore_pipeline
+  - utils_nextflow_pipeline
+
+input:
+  - version:
+      type: val
+      description: Display version and exit (boolean)
+  - validate_params:
+      type: val
+      description: Validate parameters against schema at runtime (boolean)
+  - monochrome_logs:
+      type: val
+      description: Do not use coloured log outputs (boolean)
+  - nextflow_cli_args:
+      type: val
+      description: List of positional nextflow CLI args (array)
+  - outdir:
+      type: val
+      description: The output directory where results will be saved (string)
+  - input:
+      type: val
+      description: Path to input samplesheet (string)
+  - help:
+      type: val
+      description: Display help message and exit (boolean)
+  - help_full:
+      type: val
+      description: Show the full help message (boolean)
+  - show_hidden:
+      type: val
+      description: Show hidden parameters in the help message (boolean)
+
+output:
+  - samplesheet:
+      type: channel
+      description: |
+        Validated samplesheet channel with grouped samples.
+        Structure: [ val(meta), [ path(fastqs) ] ]
+  - versions:
+      type: channel
+      description: |
+        Software versions.
+        Structure: [ path(versions.yml) ]
+
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"
