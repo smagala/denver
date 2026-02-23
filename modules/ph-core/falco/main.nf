@@ -4,7 +4,7 @@ process FALCO {
 
 
     conda "${moduleDir}/environment.yml"
-    container '025066257930.dkr.ecr.us-east-1.amazonaws.com/oamd-bio-falco:1.2.5_993520e_20260202'
+    container 'oamd-bio-falco:1.2.5_993520e_20260202'
 
     input:
     tuple val(meta), path(reads)

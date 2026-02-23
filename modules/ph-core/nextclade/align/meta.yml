@@ -1,0 +1,67 @@
+name: nextclade_align
+description: Perform pairwise alignment of consensus sequence against a reference
+  using Nextclade run with --input-ref (no dataset required)
+keywords:
+  - alignment
+  - consensus
+  - nextclade
+  - pairwise
+tools:
+  - nextclade:
+      description: Viral genome sequence alignment and analysis
+      homepage: https://github.com/nextstrain/nextclade
+      documentation: https://docs.nextstrain.org/projects/nextclade/en/stable/
+      tool_dev_url: https://github.com/nextstrain/nextclade
+      licence: ["MIT"]
+      identifier: biotools:nextclade
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - consensus:
+        type: file
+        description: Consensus FASTA file to align
+        pattern: "*.{fa,fasta}"
+        ontologies: []
+  - reference:
+      type: file
+      description: Reference FASTA file for pairwise alignment
+      pattern: "*.{fa,fasta}"
+      ontologies: []
+output:
+  alignment:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - ${prefix}.aln.fasta:
+          type: file
+          description: Aligned FASTA file
+          pattern: "*.aln.fasta"
+          ontologies: []
+  csv:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - ${prefix}.nextclade.csv:
+          type: file
+          description: CSV file containing nextclade analysis results
+          pattern: "*.nextclade.csv"
+          ontologies:
+            - edam: http://edamontology.org/format_3752
+  versions:
+    - versions.yml:
+        type: file
+        description: File containing software versions
+        pattern: "versions.yml"
+        ontologies:
+          - edam: http://edamontology.org/format_3750
+authors:
+  - "@smagala"
+maintainers:
+  - "@smagala"

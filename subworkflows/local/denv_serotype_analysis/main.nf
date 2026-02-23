@@ -18,7 +18,7 @@ include { IVAR_CONSENSUS                       } from '../../../modules/nf-core/
 include { IVAR_VARIANTS                        } from '../../../modules/nf-core/ivar/variants/main'
 include { BEDTOOLS_GENOMECOV                   } from '../../../modules/nf-core/bedtools/genomecov/main'
 include { MAFFT_ALIGN                          } from '../../../modules/nf-core/mafft/align/main'
-include { NEXTCLADE_ALIGN                      } from '../../../modules/local/nextclade/align/main'
+include { NEXTCLADE_ALIGN                      } from '../../../modules/ph-core/nextclade/align/main'
 include { SEROTYPE_CALLER                      } from '../../../modules/local/serotype_caller/main'
 include { FILTER_VARIANTS                      } from '../../../modules/local/filter_variants/main'
 include { EMPTY_HANDLER                        } from '../../../modules/local/empty_handler/main'

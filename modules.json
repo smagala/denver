@@ -7,7 +7,12 @@
                 "ph-core": {
                     "falco": {
                         "branch": "master",
-                        "git_sha": "cb9df19e77f37f074cba2a384699f343992ad4bf",
+                        "git_sha": "4a83903ed412759b6e16dec2fc07b825ae83e7ee",
+                        "installed_by": ["modules"]
+                    },
+                    "nextclade/align": {
+                        "branch": "master",
+                        "git_sha": "905eae3dbec7903b7a17f5f1a5aa88eec716d789",
                         "installed_by": ["modules"]
                     }
                 }
