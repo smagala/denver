@@ -1,4 +1,12 @@
-# ph-core/denver
+Org: NCEZID
+Contact Email: ncezid_shareit@cdc.gov
+Exemption: exemptByAgencySystem
+Status: Active
+Keywords: bioinformatics, dengue, DENV, virology, nextflow
+Version: 1.0.0
+Contract#: 47QFCA23F0058
+
+# cdcent/oamd-bio-denver
 
 > This pipeline is part of the **ph-core** namespace for public health bioinformatics pipelines.
 
@@ -16,7 +24,7 @@
 
 ## Introduction
 
-**ph-core/denver** is a bioinformatics pipeline for analyzing Dengue virus (DENV) Illumina sequencing data. It maps reads against multiple serotype references (DENV1-4 plus sylvatic variants), generates consensus sequences, identifies intra-host variants (iSNVs), and produces quality control visualizations.
+**cdcent/oamd-bio-denver** is a bioinformatics pipeline for analyzing Dengue virus (DENV) Illumina sequencing data. It maps reads against multiple serotype references (DENV1-4 plus sylvatic variants), generates consensus sequences, identifies intra-host variants (iSNVs), and produces quality control visualizations.
 
 This pipeline is a ph-core compliant NextFlow port of the [DENV_pipeline](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-024-10350-x) originally developed by Verity Hill & Chrispin Chaguza at the Grubaugh Lab.
 
@@ -73,8 +81,6 @@ nextflow run cdcent/oamd-bio-denver --references_base /path/to/references
 
 Now, you can run the pipeline using:
 
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
-
 ```bash
 nextflow run cdcent/oamd-bio-denver \
    -profile <docker/singularity/.../institute> \
@@ -87,22 +93,15 @@ nextflow run cdcent/oamd-bio-denver \
 
 ## Credits
 
-ph-core/denver was originally written by smagala.
+cdcent/oamd-bio-denver was originally written by smagala.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
-
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
 
 ## Contributions and Support
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
 ## Citations
-
-<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use ph-core/denver for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
-
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 

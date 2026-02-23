@@ -1,6 +1,6 @@
-# ph-core/denver: Documentation
+# cdcent/oamd-bio-denver: Documentation
 
-The ph-core/denver documentation is split into the following pages:
+The cdcent/oamd-bio-denver documentation is split into the following pages:
 
 - [Usage](usage.md)
   - An overview of how the pipeline works, how to run it and a description of all of the different command-line flags.

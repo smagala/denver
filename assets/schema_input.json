@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/cdcent/oamd-bio-denver/master/assets/schema_input.json",
-    "title": "ph-core/denver pipeline - params.input schema",
+    "title": "cdcent/oamd-bio-denver pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {

@@ -1,4 +1,4 @@
-# ph-core/denver: Output
+# cdcent/oamd-bio-denver: Output
 
 ## Introduction
 

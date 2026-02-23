@@ -1,4 +1,4 @@
-# ph-core/denver: Citations
+# cdcent/oamd-bio-denver: Citations
 
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 

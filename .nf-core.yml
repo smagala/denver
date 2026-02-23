@@ -6,8 +6,11 @@ lint:
   files_unchanged:
     - CODE_OF_CONDUCT.md
     - assets/nf-core-denver_logo_light.png
+    - assets/nf-core-oamd-bio-denver_logo_light.png
     - docs/images/nf-core-denver_logo_light.png
+    - docs/images/nf-core-oamd-bio-denver_logo_light.png
     - docs/images/nf-core-denver_logo_dark.png
+    - docs/images/nf-core-oamd-bio-denver_logo_dark.png
     - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/CONTRIBUTING.md
     - .github/PULL_REQUEST_TEMPLATE.md
@@ -24,8 +27,11 @@ lint:
   files_exist:
     - CODE_OF_CONDUCT.md
     - assets/nf-core-denver_logo_light.png
+    - assets/nf-core-oamd-bio-denver_logo_light.png
     - docs/images/nf-core-denver_logo_light.png
+    - docs/images/nf-core-oamd-bio-denver_logo_light.png
     - docs/images/nf-core-denver_logo_dark.png
+    - docs/images/nf-core-oamd-bio-denver_logo_dark.png
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
@@ -44,7 +50,7 @@ template:
   name: denver
   description: nf-core style NextFlow pipeline for Dengue virus (DENV) analysis
   author: James Smagala
-  version: 1.0.0dev
+  version: 1.0.0-dev
   force: true
   outdir: denver
   is_nfcore: false

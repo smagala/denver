@@ -1,7 +1,7 @@
 <!--
-# ph-core/denver pull request
+# cdcent/oamd-bio-denver pull request
 
-Many thanks for contributing to ph-core/denver!
+Many thanks for contributing to cdcent/oamd-bio-denver!
 
 Please fill in the appropriate checklist below (delete whatever is not relevant).
 These are the most common things requested on pull requests (PRs).
