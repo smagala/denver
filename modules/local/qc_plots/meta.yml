@@ -10,6 +10,7 @@ tools:
       description: |
         Creates scatter plots for variant counts and Ct values vs coverage,
         colored by serotype. Uses matplotlib with Agg backend.
+      args_id: "n/a (Python template, no task.ext.args)"
       homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
@@ -18,20 +19,19 @@ input:
       type: file
       description: Serotype calls TSV with sample IDs and coverage
       pattern: "serotype_calls.tsv"
+      mandatory: true
   - variants_summary:
       type: file
       description: Variants summary TSV with counts per sample
       pattern: "variants_summary.tsv"
-  - ct_file:
+      mandatory: true
+  - ct_data:
       type: file
-      description: Optional Ct values file (CSV format)
-      pattern: "*.csv"
-  - ct_column:
-      type: val
-      description: Column name containing Ct values
-  - id_column:
-      type: val
-      description: Column name containing sample IDs
+      description: |
+        Optional Ct values file (TSV format with sample_id and ct columns).
+        Pass empty file [] if not available.
+      pattern: "*.tsv"
+      mandatory: false
 
 output:
   - variant_plot:
@@ -40,8 +40,9 @@ output:
       pattern: "variant_plot.pdf"
   - ct_plot:
       type: file
-      description: Scatter plot of Ct vs coverage (if Ct data provided)
+      description: Scatter plot of Ct vs coverage (only produced if Ct data provided)
       pattern: "ct_plot.pdf"
+      optional: true
   - versions:
       type: file
       description: File containing software versions

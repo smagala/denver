@@ -9,6 +9,7 @@ tools:
       description: |
         Creates empty TSV files with correct headers for samples
         that failed to map to any reference sequence.
+      args_id: "n/a (Python template, no task.ext.args)"
       homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
@@ -18,12 +19,15 @@ input:
       description: |
         Groovy Map containing sample information
         e.g. `[ id:'sample1' ]`
+      mandatory: true
   - virus_type:
       type: val
       description: The virus type/serotype being processed
+      mandatory: true
   - depth:
       type: val
       description: Depth threshold used for consensus calling
+      mandatory: true
 
 output:
   - meta:

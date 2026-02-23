@@ -1,2 +1,2 @@
 sample,fastq_1,fastq_2,ct
-denv1_test,/home/smagala/wip/oamd/dengue/denver/tests/data/denv1_R1.fastq.gz,/home/smagala/wip/oamd/dengue/denver/tests/data/denv1_R2.fastq.gz,25.5
+denv1_test,denv1_R1.fastq.gz,denv1_R2.fastq.gz,25.5

@@ -1,12 +1,12 @@
 {
     "versions": {
         "content": [
-            "denver_software_mqc_versions.yml:md5,fc323421b31a8f88ff18a2c0c9e54427"
+            "denver_software_mqc_versions.yml:md5,a60d9f9aff2614b5b09171a6acda6978"
         ],
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.3"
         },
-        "timestamp": "2026-02-04T12:36:38.604840582"
+        "timestamp": "2026-02-22T21:40:56.142282776"
     }
 }

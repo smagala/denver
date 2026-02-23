@@ -9,6 +9,7 @@ tools:
       description: |
         Aggregates serotype calls and variant counts from all samples
         into summary tables for reporting and downstream analysis.
+      args_id: "n/a (Python template, no task.ext.args)"
       homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
@@ -17,15 +18,21 @@ input:
       type: file
       description: Collection of per-sample serotype call TSVs
       pattern: "*_serotype_call.tsv"
+      mandatory: true
   - variant_counts:
       type: file
       description: Collection of filtered variant TSVs
       pattern: "*_variants_frequency.tsv"
+      mandatory: true
+  - coverage_threshold:
+      type: val
+      description: Coverage threshold for classification (0-1, e.g. 0.50)
+      mandatory: true
 
 output:
   - serotype_calls:
       type: file
-      description: Samples meeting coverage threshold (>=50%)
+      description: Samples meeting coverage threshold
       pattern: "serotype_calls.tsv"
   - top_calls:
       type: file

@@ -11,3 +11,6 @@ null/
 # nf-test cache and logs
 .nf-test/
 .nf-test.log
+
+# Generated test samplesheet (created by conf/test.config at parse time)
+tests/data/.generated_samplesheet.csv

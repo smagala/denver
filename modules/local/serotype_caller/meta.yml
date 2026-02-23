@@ -10,6 +10,7 @@ tools:
       description: |
         Custom Python script for DENV serotype calling based on alignment coverage.
         Determines serotype when coverage exceeds threshold (default 50%).
+      args_id: "n/a (Python template, no task.ext.args)"
       homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
@@ -19,18 +20,26 @@ input:
       description: |
         Groovy Map containing sample information
         e.g. `[ id:'sample1' ]`
+      mandatory: true
   - alignment:
       type: file
       description: |
         Alignment file from nextalign or mafft (FASTA format).
         Filename should follow pattern: sample.serotype.depth.out.aln
       pattern: "*.aln"
+      mandatory: true
   - bed_file:
       type: file
       description: |
         Optional BED file defining trim regions.
         If provided, coverage will be calculated for both trimmed and untrimmed.
+        Pass empty file [] if not available.
       pattern: "*.bed"
+      mandatory: false
+  - coverage_threshold:
+      type: val
+      description: Coverage threshold for serotype call (0-1, e.g. 0.50)
+      mandatory: true
 
 output:
   - meta:
@@ -44,8 +53,9 @@ output:
       pattern: "*_serotype_call.tsv"
   - trimmed_alignment:
       type: file
-      description: Trimmed alignment file (only if BED file provided)
+      description: Trimmed alignment file (only produced if BED file provided)
       pattern: "*.trim.aln"
+      optional: true
   - versions:
       type: file
       description: File containing software versions

@@ -9,8 +9,9 @@ tools:
   - filter_variants:
       description: |
         Filters ivar variant calls to identify intrahost SNVs (iSNVs).
-        Keeps variants with allele frequency between 0.2 and 0.8,
+        Keeps variants with allele frequency between min and max thresholds,
         indicating true intrahost variation.
+      args_id: "n/a (Python template, no task.ext.args)"
       homepage: https://github.com/cdcent/oamd-bio-denver
       licence: ["MIT"]
 
@@ -20,10 +21,20 @@ input:
       description: |
         Groovy Map containing sample information
         e.g. `[ id:'sample1' ]`
+      mandatory: true
   - variants:
       type: file
       description: ivar variants TSV file
       pattern: "*.variants.tsv"
+      mandatory: true
+  - isnv_min_freq:
+      type: val
+      description: Minimum allele frequency threshold for iSNV filtering
+      mandatory: true
+  - isnv_max_freq:
+      type: val
+      description: Maximum allele frequency threshold for iSNV filtering
+      mandatory: true
 
 output:
   - meta:
